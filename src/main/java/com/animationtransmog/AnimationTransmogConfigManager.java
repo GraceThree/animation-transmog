@@ -10,8 +10,10 @@ public class AnimationTransmogConfigManager
     {
         configGetters = new HashMap<>();
 
-        configGetters.put("Movement", () -> config.swapMovementMode().getOption());
+        configGetters.put("Woodcut", () -> config.swapWoodcutAnimation().getOption());
+        configGetters.put("StandardSpell", () -> config.swapStandardSpellAnimation().getOption());
         configGetters.put("Teleport", () -> config.swapTeleportAnimation().getOption());
+        configGetters.put("Movement", () -> config.swapMovementMode().getOption());
     }
 
     public String getConfigOption(String configType)

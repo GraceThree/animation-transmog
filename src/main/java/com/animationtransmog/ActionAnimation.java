@@ -9,7 +9,9 @@ public enum ActionAnimation
 {
     DEFAULT("Default"),
     DIG("Dig"),
-    DIE("Die");
+    DIE("Die"),
+    HEADBANG("Headbang"),
+    TWIRL("Twirl");
 
     private final String option;
 

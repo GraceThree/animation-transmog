@@ -27,7 +27,6 @@ public class AnimationTransmogPlugin extends Plugin
 	@Inject
 	private Client client;
 
-	Player local = null;
 	int previousPose = -1;
 
 	@Inject
@@ -47,15 +46,9 @@ public class AnimationTransmogPlugin extends Plugin
 	}
 
 	@Subscribe
-	public void onGameStateChanged(GameStateChanged gameStateChanged)
-	{
-		if (gameStateChanged.getGameState() == GameState.LOGGED_IN) local = client.getLocalPlayer();
-	}
-
-	@Subscribe
 	public void onAnimationChanged(AnimationChanged e)
 	{
-		if (local == null) return;
+		Player local = client.getLocalPlayer();
 
 		int currentAnimation = local.getAnimation();
 		String currentAnimationType = animationSetManager.GetAnimationType(currentAnimation);
@@ -75,7 +68,10 @@ public class AnimationTransmogPlugin extends Plugin
 	@Subscribe
 	public void onClientTick(ClientTick event)
 	{
-		if (local == null) return;
+		Player local = client.getLocalPlayer();
+
+		// If current pose set is not recognized, disable animation pose transmog
+		if (animationSetManager.GetAnimationType(local.getWalkAnimation()) == null) return;
 
 		// Updated pose
 		int currentPose = local.getPoseAnimation();
