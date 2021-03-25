@@ -5,10 +5,11 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum ActionAnimation
+public enum TeleportAnimation
 {
     DEFAULT("Default"),
     DIG("Dig"),
+    DIE("Die"),
     HEADBANG("Headbang"),
     TWIRL("Twirl"),
     PLANKMAKE("Plank Make"),

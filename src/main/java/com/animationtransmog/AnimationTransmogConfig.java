@@ -49,6 +49,17 @@ public interface AnimationTransmogConfig extends Config
 	}
 
 	@ConfigItem(
+			keyName = "swapMineAnimation",
+			name = "Mining Animation",
+			description = "Change the animation used for Mining.",
+			section = skillingSection
+	)
+	default ActionAnimation swapMineAnimation()
+	{
+		return ActionAnimation.DEFAULT;
+	}
+
+	@ConfigItem(
 			keyName = "swapStandardSpellAnimation",
 			name = "Standard Spell Animation",
 			description = "Change the animation used for casting from the Standard Spellbook.",
@@ -65,9 +76,9 @@ public interface AnimationTransmogConfig extends Config
 			description = "Change the animation used to teleport.",
 			section = actionSection
 	)
-	default ActionAnimation swapTeleportAnimation()
+	default TeleportAnimation swapTeleportAnimation()
 	{
-		return ActionAnimation.DEFAULT;
+		return TeleportAnimation.DEFAULT;
 	}
 
 	@ConfigItem(

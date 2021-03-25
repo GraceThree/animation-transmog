@@ -24,6 +24,41 @@ public class AnimationSetManager {
         animationTypes.put(7264, "Woodcut");
         animationTypes.put(8324, "Woodcut");
 
+        animationTypes.put(625, "Mine");
+        animationTypes.put(626, "Mine");
+        animationTypes.put(627, "Mine");
+        animationTypes.put(3873, "Mine");
+        animationTypes.put(629, "Mine");
+        animationTypes.put(628, "Mine");
+        animationTypes.put(624, "Mine");
+        animationTypes.put(8313, "Mine");
+        animationTypes.put(7139, "Mine");
+        animationTypes.put(642, "Mine");
+        animationTypes.put(8346, "Mine");
+        animationTypes.put(8887, "Mine");
+        animationTypes.put(4482, "Mine");
+        animationTypes.put(7283, "Mine");
+        animationTypes.put(8347, "Mine");
+        animationTypes.put(8787, "Mine");
+        animationTypes.put(8788, "Mine");
+        animationTypes.put(8789, "Mine");
+        animationTypes.put(6753, "Mine");
+        animationTypes.put(6754, "Mine");
+        animationTypes.put(6755, "Mine");
+        animationTypes.put(3866, "Mine");
+        animationTypes.put(6757, "Mine");
+        animationTypes.put(6756, "Mine");
+        animationTypes.put(6752, "Mine");
+        animationTypes.put(8312, "Mine");
+        animationTypes.put(6758, "Mine");
+        animationTypes.put(335, "Mine");
+        animationTypes.put(8344, "Mine");
+        animationTypes.put(8886, "Mine");
+        animationTypes.put(4481, "Mine");
+        animationTypes.put(7282, "Mine");
+        animationTypes.put(8345, "Mine");
+        animationTypes.put(8786, "Mine");
+
         animationTypes.put(710, "StandardSpell");
         animationTypes.put(711, "StandardSpell");
         animationTypes.put(717, "StandardSpell");
@@ -43,29 +78,6 @@ public class AnimationSetManager {
         animationTypes.put(4069, "Teleport");
         animationTypes.put(714, "Teleport");
 
-        animationTypes.put(808, "Idle");
-        animationTypes.put(4646, "Idle");
-
-        animationTypes.put(819, "Walk");
-        animationTypes.put(4682, "Walk");
-        animationTypes.put(1660, "Walk");
-
-        animationTypes.put(824, "Run");
-        animationTypes.put(6277, "Run");
-        animationTypes.put(1661, "Run");
-
-        animationTypes.put(820, "WalkBackwards");
-        animationTypes.put(6276, "WalkBackwards");
-
-        animationTypes.put(821, "ShuffleLeft");
-        animationTypes.put(6268, "ShuffleLeft");
-
-        animationTypes.put(822, "ShuffleRight");
-        animationTypes.put(6275, "ShuffleRight");
-
-        animationTypes.put(823, "Rotate");
-
-
         // Defining animation IDs
         animationIDs = new HashMap<>();
 
@@ -73,6 +85,8 @@ public class AnimationSetManager {
         animationIDs.put("Die", 836);
         animationIDs.put("Twirl", 2107);
         animationIDs.put("Headbang", 2108);
+        animationIDs.put("Plank Make", 6298);
+        animationIDs.put("Vengeance Other", 4411);
 
 
         // Defining pose sets
@@ -110,12 +124,14 @@ public class AnimationSetManager {
     // Gets the ID of an animation given the name of animation
     public int GetAnimationID(String animationName)
     {
+        if(animationIDs.get(animationName) == null) return -1;
         return animationIDs.get(animationName);
     }
 
     // Gets the ID of a pos given the set and type of pose
     public int GetPoseID(String set, String poseType)
     {
+        if(poseSets.get(set).get(poseType) == null) return -1;
         return poseSets.get(set).get(poseType);
     }
 }

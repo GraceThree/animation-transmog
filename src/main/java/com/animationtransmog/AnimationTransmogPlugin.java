@@ -43,12 +43,17 @@ public class AnimationTransmogPlugin extends Plugin
 	protected void shutDown() throws Exception
 	{
 		log.info("Animation Transmog stopped!");
+		Player local = client.getLocalPlayer();
+		if (local == null) return;
+
+		local.setIdlePoseAnimation(808);
 	}
 
 	@Subscribe
 	public void onAnimationChanged(AnimationChanged e)
 	{
 		Player local = client.getLocalPlayer();
+		if (local == null) return;
 
 		int currentAnimation = local.getAnimation();
 		String currentAnimationType = animationSetManager.GetAnimationType(currentAnimation);
@@ -69,9 +74,7 @@ public class AnimationTransmogPlugin extends Plugin
 	public void onClientTick(ClientTick event)
 	{
 		Player local = client.getLocalPlayer();
-
-		// If current pose set is not recognized, disable animation pose transmog
-		if (animationSetManager.GetAnimationType(local.getWalkAnimation()) == null) return;
+		if (local == null) return;
 
 		// Updated pose
 		int currentPose = local.getPoseAnimation();
@@ -79,12 +82,34 @@ public class AnimationTransmogPlugin extends Plugin
 
 		if (!currentConfigOption.equals("Default") && currentPose != previousPose)
 		{
-			String currentPoseType = animationSetManager.GetAnimationType(currentPose);
-			if (currentPoseType != null) {
-				int newPoseAnimation = animationSetManager.GetPoseID(currentConfigOption, currentPoseType);
+			int newPoseAnimation = -1;
 
-				if (newPoseAnimation != -1) local.setPoseAnimation(newPoseAnimation);
+			if(currentPose == local.getWalkAnimation())
+			{
+				newPoseAnimation = animationSetManager.GetPoseID(currentConfigOption, "Walk");
 			}
+			else if(currentPose == local.getWalkRotate180())
+			{
+				newPoseAnimation = animationSetManager.GetPoseID(currentConfigOption, "WalkBackwards");
+			}
+			else if(currentPose == local.getWalkRotateLeft())
+			{
+				newPoseAnimation = animationSetManager.GetPoseID(currentConfigOption, "ShuffleLeft");
+			}
+			else if(currentPose == local.getWalkRotateRight())
+			{
+				newPoseAnimation = animationSetManager.GetPoseID(currentConfigOption, "ShuffleRight");
+			}
+			else if(currentPose == local.getRunAnimation())
+			{
+				newPoseAnimation = animationSetManager.GetPoseID(currentConfigOption, "Run");
+			}
+			else if(currentPose == local.getIdleRotateLeft() || currentPose == local.getIdleRotateRight())
+			{
+				newPoseAnimation = animationSetManager.GetPoseID(currentConfigOption, "Rotate");
+			}
+
+			if (newPoseAnimation != -1) local.setPoseAnimation(newPoseAnimation);
 		}
 
 		previousPose = local.getPoseAnimation();

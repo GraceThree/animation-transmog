@@ -11,6 +11,7 @@ public class AnimationTransmogConfigManager
         configGetters = new HashMap<>();
 
         configGetters.put("Woodcut", () -> config.swapWoodcutAnimation().getOption());
+        configGetters.put("Mine", () -> config.swapMineAnimation().getOption());
         configGetters.put("StandardSpell", () -> config.swapStandardSpellAnimation().getOption());
         configGetters.put("Teleport", () -> config.swapTeleportAnimation().getOption());
         configGetters.put("Movement", () -> config.swapMovementMode().getOption());
