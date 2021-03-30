@@ -7,8 +7,7 @@ import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.events.ClientTick;
 import net.runelite.api.events.AnimationChanged;
-import net.runelite.api.GameState;
-import net.runelite.api.events.GameStateChanged;
+import net.runelite.api.events.GraphicChanged;
 import net.runelite.api.Player;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
@@ -23,6 +22,8 @@ public class AnimationTransmogPlugin extends Plugin
 {
 	AnimationTransmogConfigManager configManager;
 	AnimationSetManager animationSetManager = new AnimationSetManager();
+
+	EffectController effectController = new EffectController();
 
 	@Inject
 	private Client client;
@@ -50,27 +51,6 @@ public class AnimationTransmogPlugin extends Plugin
 	}
 
 	@Subscribe
-	public void onAnimationChanged(AnimationChanged e)
-	{
-		Player local = client.getLocalPlayer();
-		if (local == null) return;
-
-		int currentAnimation = local.getAnimation();
-		String currentAnimationType = animationSetManager.GetAnimationType(currentAnimation);
-
-		if (currentAnimationType != null)
-		{
-			String configOption = configManager.getConfigOption(currentAnimationType);
-			if (!configOption.equals("Default")) {
-				int newAnimation = animationSetManager.GetAnimationID(configOption);
-
-				local.setAnimation(newAnimation);
-				local.setActionFrame(0);
-			}
-		}
-	}
-
-	@Subscribe
 	public void onClientTick(ClientTick event)
 	{
 		Player local = client.getLocalPlayer();
@@ -86,27 +66,27 @@ public class AnimationTransmogPlugin extends Plugin
 
 			if(currentPose == local.getWalkAnimation())
 			{
-				newPoseAnimation = animationSetManager.GetPoseID(currentConfigOption, "Walk");
+				newPoseAnimation = animationSetManager.getPoseID(currentConfigOption, "Walk");
 			}
 			else if(currentPose == local.getWalkRotate180())
 			{
-				newPoseAnimation = animationSetManager.GetPoseID(currentConfigOption, "WalkBackwards");
+				newPoseAnimation = animationSetManager.getPoseID(currentConfigOption, "WalkBackwards");
 			}
 			else if(currentPose == local.getWalkRotateLeft())
 			{
-				newPoseAnimation = animationSetManager.GetPoseID(currentConfigOption, "ShuffleLeft");
+				newPoseAnimation = animationSetManager.getPoseID(currentConfigOption, "ShuffleLeft");
 			}
 			else if(currentPose == local.getWalkRotateRight())
 			{
-				newPoseAnimation = animationSetManager.GetPoseID(currentConfigOption, "ShuffleRight");
+				newPoseAnimation = animationSetManager.getPoseID(currentConfigOption, "ShuffleRight");
 			}
 			else if(currentPose == local.getRunAnimation())
 			{
-				newPoseAnimation = animationSetManager.GetPoseID(currentConfigOption, "Run");
+				newPoseAnimation = animationSetManager.getPoseID(currentConfigOption, "Run");
 			}
 			else if(currentPose == local.getIdleRotateLeft() || currentPose == local.getIdleRotateRight())
 			{
-				newPoseAnimation = animationSetManager.GetPoseID(currentConfigOption, "Rotate");
+				newPoseAnimation = animationSetManager.getPoseID(currentConfigOption, "Rotate");
 			}
 
 			if (newPoseAnimation != -1) local.setPoseAnimation(newPoseAnimation);
@@ -117,9 +97,60 @@ public class AnimationTransmogPlugin extends Plugin
 
 		// Updated idle pose
 		int currentIdlePose = local.getIdlePoseAnimation();
-		int selectedIdlePose = animationSetManager.GetPoseID(currentConfigOption,"Idle");
+		int selectedIdlePose = animationSetManager.getPoseID(currentConfigOption,"Idle");
 
 		if (currentIdlePose != selectedIdlePose) local.setIdlePoseAnimation(selectedIdlePose);
+	}
+
+	@Subscribe
+	public void onAnimationChanged(AnimationChanged e)
+	{
+		Player local = client.getLocalPlayer();
+		if (local == null || e.getActor() != local) return;
+
+		// Setup effectController
+		if (effectController.actor == null)
+		{
+			effectController.setPlayer(client.getLocalPlayer());
+		}
+
+		int currentAnimation = local.getAnimation();
+		String currentAnimationType = animationSetManager.getAnimationType(currentAnimation);
+
+		// If an animation plays that there is a config for, play the configured effect
+		if (currentAnimationType != null)
+		{
+			String configOption = configManager.getConfigOption(currentAnimationType);
+			if (!configOption.equals("Default")) {
+				effectController.play(configOption);
+			}
+		}
+
+		// If animation is over but gfx is still playing, kill it
+		if (currentAnimation == -1 && effectController.currentGfxId != -1)
+		{
+			local.setGraphic(-1);
+		}
+	}
+
+	@Subscribe
+	public void onGraphicChanged(GraphicChanged e)
+	{
+		Player local = client.getLocalPlayer();
+		if (local == null || e.getActor() != local) return;
+
+		int currentGfx = local.getGraphic();
+
+		// If gfx is play and client tries to override it, re-override it with effect gfx
+		if (effectController.currentGfxId != -1 && currentGfx != -1 && currentGfx != effectController.currentGfxId)
+		{
+			local.setGraphic(effectController.currentGfxId);
+		}
+		// If gfx is done playing, reset controller's gfxId
+		else if (currentGfx == -1)
+		{
+			effectController.currentGfxId = -1;
+		}
 	}
 
 	@Provides

@@ -8,12 +8,9 @@ import lombok.RequiredArgsConstructor;
 public enum TeleportAnimation
 {
     DEFAULT("Default"),
-    DIG("Dig"),
-    DIE("Die"),
-    HEADBANG("Headbang"),
-    TWIRL("Twirl"),
-    PLANKMAKE("Plank Make"),
-    VENEANCEOTHER("Vengeance Other");
+    DARKNESSASCENDS("Darkness Ascends"),
+    HDVIBES("2010 Vibes"),
+    JAD2OP("Jad 2 OP");
 
     private final String option;
 

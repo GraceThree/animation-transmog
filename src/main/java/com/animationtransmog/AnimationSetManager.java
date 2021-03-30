@@ -4,13 +4,15 @@ import java.util.HashMap;
 
 public class AnimationSetManager {
     HashMap<Integer, String> animationTypes;
-    HashMap<String, Integer> animationIDs;
     HashMap<String, HashMap<String, Integer>> poseSets;
 
     public AnimationSetManager()
     {
         // Defining animation types
         animationTypes = new HashMap<>();
+
+        animationTypes.put(4069, "Teleport");
+        animationTypes.put(714, "Teleport");
 
         animationTypes.put(879, "Woodcut");
         animationTypes.put(877, "Woodcut");
@@ -73,21 +75,6 @@ public class AnimationSetManager {
         animationTypes.put(1169, "StandardSpell");
         animationTypes.put(7855, "StandardSpell");
 
-        animationTypes.put(830, "Dig");
-        animationTypes.put(836, "Die");
-        animationTypes.put(4069, "Teleport");
-        animationTypes.put(714, "Teleport");
-
-        // Defining animation IDs
-        animationIDs = new HashMap<>();
-
-        animationIDs.put("Dig", 830);
-        animationIDs.put("Die", 836);
-        animationIDs.put("Twirl", 2107);
-        animationIDs.put("Headbang", 2108);
-        animationIDs.put("Plank Make", 6298);
-        animationIDs.put("Vengeance Other", 4411);
-
 
         // Defining pose sets
         poseSets = new HashMap<>();
@@ -116,20 +103,13 @@ public class AnimationSetManager {
     }
 
     // Gets the type of animation given its ID number
-    public String GetAnimationType(int animationID)
+    public String getAnimationType(int animationID)
     {
         return animationTypes.get(animationID);
     }
 
-    // Gets the ID of an animation given the name of animation
-    public int GetAnimationID(String animationName)
-    {
-        if(animationIDs.get(animationName) == null) return -1;
-        return animationIDs.get(animationName);
-    }
-
     // Gets the ID of a pos given the set and type of pose
-    public int GetPoseID(String set, String poseType)
+    public int getPoseID(String set, String poseType)
     {
         if(poseSets.get(set).get(poseType) == null) return -1;
         return poseSets.get(set).get(poseType);

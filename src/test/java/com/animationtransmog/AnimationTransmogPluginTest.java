@@ -7,7 +7,7 @@ public class AnimationTransmogPluginTest
 {
 	public static void main(String[] args) throws Exception
 	{
-		ExternalPluginManager.loadBuiltin(AnimationTransmogPlugin.class);
+//		ExternalPluginManager.loadBuiltin(AnimationTransmogPlugin.class);
 		RuneLite.main(args);
 	}
 }

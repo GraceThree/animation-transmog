@@ -8,11 +8,11 @@ import lombok.RequiredArgsConstructor;
 public enum ActionAnimation
 {
     DEFAULT("Default"),
+    ARCANECHOP("Arcane Chop"),
+    ARCANEMINE("Arcane Mine"),
+    BLASTMINE("Blast Mine"),
     DIG("Dig"),
-    HEADBANG("Headbang"),
-    TWIRL("Twirl"),
-    PLANKMAKE("Plank Make"),
-    VENEANCEOTHER("Vengeance Other");
+    HEADBANG("Headbang");
 
     private final String option;
 
