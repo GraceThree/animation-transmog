@@ -5,8 +5,10 @@ import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
+import net.runelite.api.GameState;
 import net.runelite.api.events.ClientTick;
 import net.runelite.api.events.AnimationChanged;
+import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GraphicChanged;
 import net.runelite.api.Player;
 import net.runelite.client.config.ConfigManager;
@@ -48,6 +50,16 @@ public class AnimationTransmogPlugin extends Plugin
 		if (local == null) return;
 
 		local.setIdlePoseAnimation(808);
+	}
+
+	@Subscribe
+	public void onGameStateChanged(GameStateChanged gameStateChanged)
+	{
+		if (gameStateChanged.getGameState() == GameState.LOGGED_IN)
+		{
+			// Setup effectController
+			effectController.setPlayer(client.getLocalPlayer());
+		}
 	}
 
 	@Subscribe
