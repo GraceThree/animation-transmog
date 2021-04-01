@@ -31,6 +31,7 @@ public class AnimationTransmogPlugin extends Plugin
 	private Client client;
 
 	int previousPose = -1;
+	int previousIdlePose = -1;
 
 	@Inject
 	private AnimationTransmogConfig config;
@@ -49,7 +50,7 @@ public class AnimationTransmogPlugin extends Plugin
 		Player local = client.getLocalPlayer();
 		if (local == null) return;
 
-		local.setIdlePoseAnimation(808);
+		if (previousIdlePose != -1) local.setIdlePoseAnimation(previousIdlePose);
 	}
 
 	@Subscribe
@@ -65,14 +66,16 @@ public class AnimationTransmogPlugin extends Plugin
 	@Subscribe
 	public void onClientTick(ClientTick event)
 	{
+		String currentConfigOption = configManager.getConfigOption("Movement");
+		if (currentConfigOption.equals("Default")) return;
+
 		Player local = client.getLocalPlayer();
 		if (local == null) return;
 
 		// Updated pose
 		int currentPose = local.getPoseAnimation();
-		String currentConfigOption = configManager.getConfigOption("Movement");
 
-		if (!currentConfigOption.equals("Default") && currentPose != previousPose)
+		if (currentPose != previousPose)
 		{
 			int newPoseAnimation = -1;
 
@@ -111,7 +114,10 @@ public class AnimationTransmogPlugin extends Plugin
 		int currentIdlePose = local.getIdlePoseAnimation();
 		int selectedIdlePose = animationSetManager.getPoseID(currentConfigOption,"Idle");
 
-		if (currentIdlePose != selectedIdlePose) local.setIdlePoseAnimation(selectedIdlePose);
+		if (currentIdlePose != selectedIdlePose) {
+			previousIdlePose = currentIdlePose;
+			local.setIdlePoseAnimation(selectedIdlePose);
+		}
 	}
 
 	@Subscribe
@@ -142,6 +148,7 @@ public class AnimationTransmogPlugin extends Plugin
 		if (currentAnimation == -1 && effectController.currentGfxId != -1)
 		{
 			local.setGraphic(-1);
+			effectController.currentGfxId = -1;
 		}
 	}
 
@@ -154,14 +161,9 @@ public class AnimationTransmogPlugin extends Plugin
 		int currentGfx = local.getGraphic();
 
 		// If gfx is play and client tries to override it, re-override it with effect gfx
-		if (effectController.currentGfxId != -1 && currentGfx != -1 && currentGfx != effectController.currentGfxId)
+		if (effectController.currentGfxId != -1 && currentGfx != effectController.currentGfxId)
 		{
 			local.setGraphic(effectController.currentGfxId);
-		}
-		// If gfx is done playing, reset controller's gfxId
-		else if (currentGfx == -1)
-		{
-			effectController.currentGfxId = -1;
 		}
 	}
 
