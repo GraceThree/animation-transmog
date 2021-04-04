@@ -1,4 +1,4 @@
-package com.animationtransmog;
+package com.animationtransmog.effectcontroller;
 /*
 Given an actor, the Effect class can control the gfx, animation, and the timing
 of the two to orchestrate and overall visual effect.
@@ -11,10 +11,10 @@ import java.util.HashMap;
 public class EffectController {
     HashMap<String, Effect> effects;
 
-    int currentAnimationId = -1;
-    int currentGfxId = -1;
+    public int currentAnimationId = -1;
+    public int currentGfxId = -1;
 
-    Actor actor = null;
+    public Actor actor = null;
 
     public EffectController()
     {
@@ -34,12 +34,12 @@ public class EffectController {
         effects.put("Headbang", new Effect(2108, -1));
     }
 
-    void setPlayer(Actor actor)
+    public void setPlayer(Actor actor)
     {
         this.actor = actor;
     }
 
-    void play(String effectName)
+    public void play(String effectName)
     {
         Effect effect = getEffect(effectName);
         if (effect == null) return;
@@ -60,7 +60,7 @@ public class EffectController {
     }
 
     // Gets an Effect given the name of the effect
-    public Effect getEffect(String effectName)
+    Effect getEffect(String effectName)
     {
         return effects.get(effectName);
     }

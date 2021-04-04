@@ -1,7 +1,4 @@
-package com.animationtransmog;
-
-import java.util.ArrayList;
-import java.util.List;
+package com.animationtransmog.effectcontroller;
 
 public class Effect {
     Animation animation;
@@ -13,9 +10,9 @@ public class Effect {
         gfx = new GFX(gfxId, 0);
     }
 
-    public Effect(int animationId, int gfxId, int animtaionStartFrame, int gfxStartFrame)
+    public Effect(int animationId, int gfxId, int animationStartFrame, int gfxStartFrame)
     {
-        animation = new Animation(animationId, animtaionStartFrame);
+        animation = new Animation(animationId, animationStartFrame);
         gfx = new GFX(gfxId, gfxStartFrame);
     }
 }
