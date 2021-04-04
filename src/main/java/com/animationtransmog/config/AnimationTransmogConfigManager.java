@@ -1,4 +1,4 @@
-package com.animationtransmog;
+package com.animationtransmog.config;
 
 import java.util.HashMap;
 import java.util.function.Supplier;

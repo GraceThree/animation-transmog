@@ -2,11 +2,10 @@ package com.animationtransmog;
 
 import java.util.HashMap;
 
-public class AnimationSetManager {
+public class AnimationTypes {
     HashMap<Integer, String> animationTypes;
-    HashMap<String, HashMap<String, Integer>> poseSets;
 
-    public AnimationSetManager()
+    public AnimationTypes()
     {
         // Defining animation types
         animationTypes = new HashMap<>();
@@ -74,44 +73,11 @@ public class AnimationSetManager {
         animationTypes.put(1167, "StandardSpell");
         animationTypes.put(1169, "StandardSpell");
         animationTypes.put(7855, "StandardSpell");
-
-
-        // Defining pose sets
-        poseSets = new HashMap<>();
-
-        // Default movement
-        HashMap<String, Integer> defaultPoses = new HashMap<>();
-        defaultPoses.put("Idle", 808);
-        defaultPoses.put("Walk", 819);
-        defaultPoses.put("Run", 824);
-        defaultPoses.put("WalkBackwards", 820);
-        defaultPoses.put("ShuffleLeft", 821);
-        defaultPoses.put("ShuffleRight", 822);
-        defaultPoses.put("Rotate", 823);
-        poseSets.put("Default", defaultPoses);
-
-        // Monke movement
-        HashMap<String, Integer> monkePoses = new HashMap<>();
-        monkePoses.put("Idle", 4646);
-        monkePoses.put("Walk", 4682);
-        monkePoses.put("Run", 6277);
-        monkePoses.put("WalkBackwards", 6276);
-        monkePoses.put("ShuffleLeft", 6268);
-        monkePoses.put("ShuffleRight", 6275);
-        monkePoses.put("Rotate", 823);
-        poseSets.put("Monke", monkePoses);
     }
 
     // Gets the type of animation given its ID number
     public String getAnimationType(int animationID)
     {
         return animationTypes.get(animationID);
-    }
-
-    // Gets the ID of a pos given the set and type of pose
-    public int getPoseID(String set, String poseType)
-    {
-        if(poseSets.get(set).get(poseType) == null) return -1;
-        return poseSets.get(set).get(poseType);
     }
 }

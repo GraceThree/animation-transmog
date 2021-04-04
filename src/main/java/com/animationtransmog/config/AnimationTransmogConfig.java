@@ -1,4 +1,4 @@
-package com.animationtransmog;
+package com.animationtransmog.config;
 
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;

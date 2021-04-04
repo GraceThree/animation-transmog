@@ -1,4 +1,4 @@
-package com.animationtransmog.effectcontroller;
+package com.animationtransmog.effect;
 
 public class Animation {
     int animationId;

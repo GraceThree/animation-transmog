@@ -1,18 +1,16 @@
-package com.animationtransmog;
+package com.animationtransmog.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum ActionAnimation
+public enum TeleportAnimation
 {
     DEFAULT("Default"),
-    ARCANECHOP("Arcane Chop"),
-    ARCANEMINE("Arcane Mine"),
-    BLASTMINE("Blast Mine"),
-    DIG("Dig"),
-    HEADBANG("Headbang");
+    DARKNESSASCENDS("Darkness Ascends"),
+    HDVIBES("2010 Vibes"),
+    JAD2OP("Jad 2 OP");
 
     private final String option;
 

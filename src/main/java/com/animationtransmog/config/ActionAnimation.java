@@ -1,14 +1,18 @@
-package com.animationtransmog;
+package com.animationtransmog.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum MovementMode
+public enum ActionAnimation
 {
     DEFAULT("Default"),
-    MONKE("Monke");
+    ARCANECHOP("Arcane Chop"),
+    ARCANEMINE("Arcane Mine"),
+    BLASTMINE("Blast Mine"),
+    DIG("Dig"),
+    HEADBANG("Headbang");
 
     private final String option;
 

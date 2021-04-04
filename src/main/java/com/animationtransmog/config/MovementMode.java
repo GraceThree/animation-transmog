@@ -1,16 +1,14 @@
-package com.animationtransmog;
+package com.animationtransmog.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum TeleportAnimation
+public enum MovementMode
 {
     DEFAULT("Default"),
-    DARKNESSASCENDS("Darkness Ascends"),
-    HDVIBES("2010 Vibes"),
-    JAD2OP("Jad 2 OP");
+    MONKE("Monke");
 
     private final String option;
 
