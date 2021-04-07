@@ -16,8 +16,12 @@ public class EffectController {
 
     HashMap<String, Effect> effects;
 
-    public int currentAnimationId = -1;
-    public int currentGfxId = -1;
+    private int currentAnimationId = -1;
+    private int currentGfxId = -1;
+
+    private int currentGfxFrame = 0;
+
+    private boolean isPlaying = false;
 
     public Actor actor = null;
 
@@ -57,7 +61,9 @@ public class EffectController {
             {
                 actor.setGraphic(-1);
                 currentGfxId = -1;
+                currentGfxFrame = 0;
             }
+            isPlaying = false;
             return;
         }
 
@@ -72,7 +78,7 @@ public class EffectController {
 
         currentAnimationId = newAnimation.animationId;
         actor.setAnimation(newAnimation.animationId);
-        actor.setActionFrame(newAnimation.startFrame);
+        actor.setAnimationFrame(newAnimation.startFrame);
 
         if (newGfx.gfxId != -1)
         {
@@ -80,16 +86,25 @@ public class EffectController {
             actor.setGraphic(newGfx.gfxId);
             actor.setSpotAnimFrame(newGfx.startFrame);
         }
+        isPlaying = true;
     }
 
     public void override()
     {
-        int currentGfx = actor.getGraphic();
-
         // If gfx is play and client tries to override it, re-override it with effect gfx
-        if (currentGfxId != -1 && currentGfx != currentGfxId)
+        if (currentGfxId != -1 && actor.getGraphic() != currentGfxId)
         {
             actor.setGraphic(currentGfxId);
+        }
+    }
+
+    public void updateGfxFrame()
+    {
+        if (!isPlaying) return;
+        if (actor.getGraphic() == currentGfxId)
+        {
+            if (actor.getSpotAnimFrame() == 0) actor.setSpotAnimFrame(currentGfxFrame+1);
+            currentGfxFrame = actor.getSpotAnimFrame();
         }
     }
 
