@@ -7,6 +7,7 @@ of the two to orchestrate and overall visual effect.
 import com.animationtransmog.AnimationTypes;
 import com.animationtransmog.config.AnimationTransmogConfigManager;
 import net.runelite.api.Actor;
+import net.runelite.api.Client;
 
 import java.util.HashMap;
 
@@ -24,6 +25,7 @@ public class EffectController {
     private boolean isPlaying = false;
 
     public Actor actor = null;
+    public Client client = null;
 
     public EffectController(AnimationTypes animationTypes, AnimationTransmogConfigManager configManager)
     {
@@ -34,21 +36,22 @@ public class EffectController {
         effects = new HashMap<>();
 
         // Teleport Effects
-        effects.put("Darkness Ascends", new Effect(3945, 1577));
-        effects.put("2010 Vibes", new Effect(3945, 56));
-        effects.put("Jad 2 OP", new Effect(836, 451));
+        effects.put("Darkness Ascends", new Effect(3945, 1577, -1));
+        effects.put("2010 Vibes", new Effect(3945, 56, -1));
+        effects.put("Jad 2 OP", new Effect(836, 451, -1));
 
         // Action Effects
-        effects.put("Arcane Chop", new Effect(6298, 1063));
-        effects.put("Arcane Mine", new Effect(4411, 739));
-        effects.put("Blast Mine", new Effect(2107, 659));
-        effects.put("Dig", new Effect(830, -1));
-        effects.put("Headbang", new Effect(2108, -1));
+        effects.put("Arcane Chop", new Effect(6298, 1063, -1));
+        effects.put("Arcane Mine", new Effect(4411, 739, -1));
+        effects.put("Blast Mine", new Effect(2107, 659, 163));
+        effects.put("Dig", new Effect(830, -1, -1));
+        effects.put("Headbang", new Effect(2108, -1, -1));
     }
 
-    public void setPlayer(Actor actor)
+    public void setPlayer(Actor actor, Client client)
     {
         this.actor = actor;
+        this.client = client;
     }
 
     public void update()
@@ -75,6 +78,7 @@ public class EffectController {
 
         Animation newAnimation = effect.animation;
         GFX newGfx = effect.gfx;
+        Sound newSound = effect.sound;
 
         currentAnimationId = newAnimation.animationId;
         actor.setAnimation(newAnimation.animationId);
@@ -85,6 +89,13 @@ public class EffectController {
             currentGfxId = newGfx.gfxId;
             actor.setGraphic(newGfx.gfxId);
             actor.setSpotAnimFrame(newGfx.startFrame);
+        }
+
+        if (newSound.soundId != -1)
+        {
+            int sceneX = actor.getLocalLocation().getSceneX();
+            int sceneY = actor.getLocalLocation().getSceneY();
+            client.playSoundEffect(newSound.soundId, sceneX, sceneY, 1, newSound.delayFrame);
         }
         isPlaying = true;
     }

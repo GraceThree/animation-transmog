@@ -21,6 +21,10 @@
 ## Animation List
 
 - 3945: Wilderness Obelisk teleport
+- 1067 393: claws
+- 404: claws
+- 4230: crossbow
+- 10961: d claws
 
 ## GFX List
 

@@ -59,7 +59,7 @@ public class AnimationTransmogPlugin extends Plugin
 		if (gameStateChanged.getGameState() == GameState.LOGGED_IN)
 		{
 			// Setup effectController
-			effectController.setPlayer(client.getLocalPlayer());
+			effectController.setPlayer(client.getLocalPlayer(), client);
 			// Setup poseController
 			poseController.setPlayer(client.getLocalPlayer());
 		}
@@ -86,7 +86,7 @@ public class AnimationTransmogPlugin extends Plugin
 		// Setup effectController and make sure the animation change is from your player
 		Player local = client.getLocalPlayer();
 		if (local == null || e.getActor() != local) return;
-		if (effectController.actor == null) effectController.setPlayer(client.getLocalPlayer());
+		if (effectController.actor == null) effectController.setPlayer(client.getLocalPlayer(), client);
 
 		// Update effect
 		effectController.update();
