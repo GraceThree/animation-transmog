@@ -13,6 +13,8 @@ public class AnimationTypes {
         animationTypes.put(4069, "Teleport");
         animationTypes.put(714, "Teleport");
 
+        animationTypes.put(2295, "AshScatter");
+
         animationTypes.put(879, "Woodcut");
         animationTypes.put(877, "Woodcut");
         animationTypes.put(875, "Woodcut");

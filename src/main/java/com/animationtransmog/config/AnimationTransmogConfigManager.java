@@ -14,6 +14,7 @@ public class AnimationTransmogConfigManager
         configGetters.put("Mine", () -> config.swapMineAnimation().getOption());
         configGetters.put("StandardSpell", () -> config.swapStandardSpellAnimation().getOption());
         configGetters.put("Teleport", () -> config.swapTeleportAnimation().getOption());
+        configGetters.put("AshScatter", () -> config.swapAshScatterAnimation().getOption());
         configGetters.put("Movement", () -> config.swapMovementMode().getOption());
     }
 

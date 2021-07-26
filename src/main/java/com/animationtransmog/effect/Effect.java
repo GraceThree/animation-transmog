@@ -12,10 +12,10 @@ public class Effect {
         sound = new Sound(soundId, 0);
     }
 
-    public Effect(int animationId, int gfxId, int animationStartFrame, int gfxStartFrame, int soundId, int soundDelayFrame)
+    public Effect(int animationId, int gfxId, int animationStartFrame, int gfxStartFrame, int gfxEndFrame, int soundId, int soundDelayFrame)
     {
         animation = new Animation(animationId, animationStartFrame);
-        gfx = new GFX(gfxId, gfxStartFrame);
+        gfx = new GFX(gfxId, gfxStartFrame, gfxEndFrame);
         sound = new Sound(soundId, soundDelayFrame);
     }
 }

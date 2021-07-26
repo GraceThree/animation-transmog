@@ -76,8 +76,8 @@ public class AnimationTransmogPlugin extends Plugin
 		// Updated pose
 		poseController.update();
 
-		// Track frames of current animation and GFX
-		effectController.updateGfxFrame();
+		// Track current GFX
+		effectController.trackGfx();
 	}
 
 	@Subscribe

@@ -82,6 +82,17 @@ public interface AnimationTransmogConfig extends Config
 	}
 
 	@ConfigItem(
+			keyName = "swapAshScatterAnimation",
+			name = "Ash Scatter Animation",
+			description = "Change the animation used to scatter ashes.",
+			section = actionSection
+	)
+	default ActionAnimation swapAshScatterAnimation()
+	{
+		return ActionAnimation.DEFAULT;
+	}
+
+	@ConfigItem(
 			keyName = "swapMovementMode",
 			name = "Movement Mode",
 			description = "Change the way your character looks when moving around",
@@ -91,5 +102,4 @@ public interface AnimationTransmogConfig extends Config
 	{
 		return MovementMode.DEFAULT;
 	}
-	// gfx 678
 }

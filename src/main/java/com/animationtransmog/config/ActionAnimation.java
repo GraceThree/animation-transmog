@@ -12,7 +12,8 @@ public enum ActionAnimation
     ARCANEMINE("Arcane Mine"),
     BLASTMINE("Blast Mine"),
     DIG("Dig"),
-    HEADBANG("Headbang");
+    HEADBANG("Headbang"),
+    SMOOTHSCATTER("Smooth Scatter");
 
     private final String option;
 

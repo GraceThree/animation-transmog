@@ -21,6 +21,7 @@ public class EffectController {
     private int currentGfxId = -1;
 
     private int currentGfxFrame = 0;
+    private int currentGfxEndFrame = -1;
 
     private boolean isPlaying = false;
 
@@ -43,6 +44,10 @@ public class EffectController {
         // Action Effects
         effects.put("Arcane Chop", new Effect(6298, 1063, -1));
         effects.put("Arcane Mine", new Effect(4411, 739, -1));
+
+        // Credit goes to @Cyborger1 for name and effect IDs
+        effects.put("Smooth Scatter", new Effect(7533, 1103, 0, 0, 45, -1, 0));
+
         effects.put("Blast Mine", new Effect(2107, 659, 163));
         effects.put("Dig", new Effect(830, -1, -1));
         effects.put("Headbang", new Effect(2108, -1, -1));
@@ -62,9 +67,10 @@ public class EffectController {
         {
             if (currentGfxId != -1)
             {
-                actor.setGraphic(-1);
                 currentGfxId = -1;
                 currentGfxFrame = 0;
+                currentGfxEndFrame = -1;
+                actor.setGraphic(-1);
             }
             isPlaying = false;
             return;
@@ -87,6 +93,8 @@ public class EffectController {
         if (newGfx.gfxId != -1)
         {
             currentGfxId = newGfx.gfxId;
+            currentGfxFrame = 0;
+            currentGfxEndFrame = newGfx.endFrame;
             actor.setGraphic(newGfx.gfxId);
             actor.setSpotAnimFrame(newGfx.startFrame);
         }
@@ -109,13 +117,21 @@ public class EffectController {
         }
     }
 
-    public void updateGfxFrame()
+    public void trackGfx()
     {
         if (!isPlaying) return;
         if (actor.getGraphic() == currentGfxId)
         {
             if (actor.getSpotAnimFrame() == 0) actor.setSpotAnimFrame(currentGfxFrame+1);
             currentGfxFrame = actor.getSpotAnimFrame();
+
+            if (currentGfxEndFrame != -1 && currentGfxFrame >= currentGfxEndFrame)
+            {
+                currentGfxId = -1;
+                currentGfxFrame = 0;
+                currentGfxEndFrame = -1;
+                actor.setGraphic(-1);
+            }
         }
     }
 
