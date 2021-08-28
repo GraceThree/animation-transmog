@@ -10,9 +10,6 @@ public class PoseController {
 
     HashMap<String, HashMap<String, Integer>> poseSets;
 
-    int previousPose = -1;
-    int previousIdlePose = -1;
-
     public Actor actor = null;
 
     public PoseController(AnimationTransmogConfigManager configManager)
@@ -53,65 +50,37 @@ public class PoseController {
     public void update()
     {
         String currentConfigOption = configManager.getConfigOption("Movement");
-        if (currentConfigOption.equals("Default")) {
-            reset();
-            return;
-        }
 
-        int currentPose = actor.getPoseAnimation();
-
-        if (currentPose != previousPose)
-        {
-            int newPoseAnimation = -1;
-
-            if(currentPose == actor.getWalkAnimation())
-            {
-                newPoseAnimation = getPoseID(currentConfigOption, "Walk");
-            }
-            else if(currentPose == actor.getWalkRotate180())
-            {
-                newPoseAnimation = getPoseID(currentConfigOption, "WalkBackwards");
-            }
-            else if(currentPose == actor.getWalkRotateLeft())
-            {
-                newPoseAnimation = getPoseID(currentConfigOption, "ShuffleLeft");
-            }
-            else if(currentPose == actor.getWalkRotateRight())
-            {
-                newPoseAnimation = getPoseID(currentConfigOption, "ShuffleRight");
-            }
-            else if(currentPose == actor.getRunAnimation())
-            {
-                newPoseAnimation = getPoseID(currentConfigOption, "Run");
-            }
-            else if(currentPose == actor.getIdleRotateLeft() || currentPose == actor.getIdleRotateRight())
-            {
-                newPoseAnimation = getPoseID(currentConfigOption, "Rotate");
-            }
-
-            if (newPoseAnimation != -1) actor.setPoseAnimation(newPoseAnimation);
-        }
-
-        previousPose = actor.getPoseAnimation();
-
-
-        // Updated idle pose
-        int currentIdlePose = actor.getIdlePoseAnimation();
-        int selectedIdlePose = getPoseID(currentConfigOption,"Idle");
-
-        if (currentIdlePose != selectedIdlePose) {
-            previousIdlePose = currentIdlePose;
-            actor.setIdlePoseAnimation(selectedIdlePose);
-        }
+        if(actor.getWalkAnimation() != getPoseID(currentConfigOption, "Walk"))
+            actor.setWalkAnimation(getPoseID(currentConfigOption, "Walk"));
+        if(actor.getWalkRotate180() != getPoseID(currentConfigOption, "WalkBackwards"))
+            actor.setWalkRotate180(getPoseID(currentConfigOption, "WalkBackwards"));
+        if(actor.getWalkRotateLeft() != getPoseID(currentConfigOption, "ShuffleLeft"))
+            actor.setWalkRotateLeft(getPoseID(currentConfigOption, "ShuffleLeft"));
+        if(actor.getWalkRotateRight() != getPoseID(currentConfigOption, "ShuffleRight"))
+            actor.setWalkRotateRight(getPoseID(currentConfigOption, "ShuffleRight"));
+        if(actor.getRunAnimation() != getPoseID(currentConfigOption, "Run"))
+            actor.setRunAnimation(getPoseID(currentConfigOption, "Run"));
+        if(actor.getIdleRotateLeft() != getPoseID(currentConfigOption, "Rotate"))
+            actor.setIdleRotateLeft(getPoseID(currentConfigOption, "Rotate"));
+        if(actor.getIdleRotateRight() != getPoseID(currentConfigOption, "Rotate"))
+            actor.setIdleRotateRight(getPoseID(currentConfigOption, "Rotate"));
+        if (actor.getIdlePoseAnimation() != getPoseID(currentConfigOption,"Idle"))
+            actor.setIdlePoseAnimation(getPoseID(currentConfigOption,"Idle"));
     }
 
     void reset()
     {
         if (actor == null) return;
-        if (previousIdlePose != -1) {
-            actor.setIdlePoseAnimation(previousIdlePose);
-            previousIdlePose = -1;
-        }
+
+        actor.setWalkAnimation(getPoseID("Default", "Walk"));
+        actor.setWalkRotate180(getPoseID("Default", "WalkBackwards"));
+        actor.setWalkRotateLeft(getPoseID("Default", "ShuffleLeft"));
+        actor.setWalkRotateRight(getPoseID("Default", "ShuffleRight"));
+        actor.setRunAnimation(getPoseID("Default", "Run"));
+        actor.setIdleRotateLeft(getPoseID("Default", "Rotate"));
+        actor.setIdleRotateRight(getPoseID("Default", "Rotate"));
+        actor.setIdlePoseAnimation(getPoseID("Default","Idle"));
     }
 
     // Gets the ID of a pos given the set and type of pose
