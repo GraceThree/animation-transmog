@@ -10,6 +10,8 @@ public class PoseController {
 
     HashMap<String, HashMap<String, Integer>> poseSets;
 
+    String previousConfig = "";
+
     public Actor actor = null;
 
     public PoseController(AnimationTransmogConfigManager configManager)
@@ -51,6 +53,14 @@ public class PoseController {
     {
         String currentConfigOption = configManager.getConfigOption("Movement");
 
+        // If you are changing back to Default, reset all the poses then do nothing
+        // till a different config is chosen.
+        if (currentConfigOption.equals("Default"))
+        {
+            if (!previousConfig.equals("Default")) reset();
+            return;
+        }
+
         if(actor.getWalkAnimation() != getPoseID(currentConfigOption, "Walk"))
             actor.setWalkAnimation(getPoseID(currentConfigOption, "Walk"));
         if(actor.getWalkRotate180() != getPoseID(currentConfigOption, "WalkBackwards"))
@@ -67,6 +77,8 @@ public class PoseController {
             actor.setIdleRotateRight(getPoseID(currentConfigOption, "Rotate"));
         if (actor.getIdlePoseAnimation() != getPoseID(currentConfigOption,"Idle"))
             actor.setIdlePoseAnimation(getPoseID(currentConfigOption,"Idle"));
+
+        previousConfig = currentConfigOption;
     }
 
     void reset()
@@ -81,6 +93,8 @@ public class PoseController {
         actor.setIdleRotateLeft(getPoseID("Default", "Rotate"));
         actor.setIdleRotateRight(getPoseID("Default", "Rotate"));
         actor.setIdlePoseAnimation(getPoseID("Default","Idle"));
+
+        previousConfig = "Default";
     }
 
     // Gets the ID of a pos given the set and type of pose
