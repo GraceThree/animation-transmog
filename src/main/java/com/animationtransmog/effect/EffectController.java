@@ -9,11 +9,14 @@ import com.animationtransmog.config.AnimationTransmogConfigManager;
 import net.runelite.api.Actor;
 import net.runelite.api.Client;
 
-import java.util.HashMap;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class EffectController {
     AnimationTypes animationTypes;
     AnimationTransmogConfigManager configManager;
+
+    List<Integer> regionBlacklist;
 
     HashMap<String, Effect> effects;
 
@@ -32,6 +35,27 @@ public class EffectController {
     {
         this.animationTypes = animationTypes;
         this.configManager = configManager;
+
+        regionBlacklist = new ArrayList<Integer>();
+
+        // ToA Regions
+        regionBlacklist.add(14164);
+        regionBlacklist.add(14676);
+        regionBlacklist.add(15188);
+        regionBlacklist.add(15444);
+        regionBlacklist.add(15700);
+        regionBlacklist.add(15955);
+        regionBlacklist.add(13906);
+        regionBlacklist.add(14162);
+        regionBlacklist.add(14674);
+        regionBlacklist.add(15186);
+        regionBlacklist.add(15698);
+        regionBlacklist.add(15954);
+        regionBlacklist.add(15953);
+        regionBlacklist.add(14160);
+        regionBlacklist.add(14672);
+        regionBlacklist.add(15184);
+        regionBlacklist.add(15696);
 
         // Defining Effects
         effects = new HashMap<>();
@@ -61,6 +85,13 @@ public class EffectController {
 
     public void update()
     {
+        // Check if player is in a region that causes issues for the plugin
+        int[] regionIDs = client.getMapRegions();
+        if (!Collections.disjoint(regionBlacklist, Arrays.stream(regionIDs).boxed().collect(Collectors.toList())))
+        {
+            return;
+        }
+
         int currentAnimation = actor.getAnimation();
         String currentAnimationType = animationTypes.getAnimationType(currentAnimation);
         if (currentAnimationType == null)
