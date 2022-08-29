@@ -2,16 +2,14 @@ package com.animationtransmog;
 
 import com.animationtransmog.config.AnimationTransmogConfig;
 import com.animationtransmog.config.AnimationTransmogConfigManager;
+import com.animationtransmog.effect.AnimationPlayerController;
 import com.animationtransmog.effect.EffectController;
 import com.google.inject.Provides;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
-import net.runelite.api.events.ClientTick;
-import net.runelite.api.events.AnimationChanged;
-import net.runelite.api.events.GameStateChanged;
-import net.runelite.api.events.GraphicChanged;
+import net.runelite.api.events.*;
 import net.runelite.api.Player;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
@@ -33,6 +31,7 @@ public class AnimationTransmogPlugin extends Plugin
 	AnimationTransmogConfigManager configManager;
 	AnimationTypes animationTypes;
 	EffectController effectController;
+	AnimationPlayerController animationPlayerController;
 	PoseController poseController;
 
 	@Override
@@ -42,6 +41,7 @@ public class AnimationTransmogPlugin extends Plugin
 		configManager = new AnimationTransmogConfigManager(config);
 		animationTypes = new AnimationTypes();
 		effectController = new EffectController(animationTypes, configManager);
+		animationPlayerController = new AnimationPlayerController(configManager);
 		poseController = new PoseController(configManager);
 	}
 
@@ -60,6 +60,8 @@ public class AnimationTransmogPlugin extends Plugin
 		{
 			// Setup effectController
 			effectController.setPlayer(client.getLocalPlayer(), client);
+			// Setup animationPlayerController
+			animationPlayerController.setPlayer(client.getLocalPlayer(), client);
 			// Setup poseController
 			poseController.setPlayer(client.getLocalPlayer());
 		}
@@ -73,11 +75,17 @@ public class AnimationTransmogPlugin extends Plugin
 		if (local == null) return;
 		if (poseController.actor == null) poseController.setPlayer(local);
 
+		// Update animation player
+		animationPlayerController.update();
+
 		// Updated pose
 		poseController.update();
+	}
 
-		// Track current GFX
-		effectController.trackGfx();
+	@Subscribe
+	public void onBeforeRender(BeforeRender event)
+	{
+		effectController.onBeforeRender();
 	}
 
 	@Subscribe
@@ -89,7 +97,7 @@ public class AnimationTransmogPlugin extends Plugin
 		if (effectController.actor == null) effectController.setPlayer(client.getLocalPlayer(), client);
 
 		// Update effect
-		effectController.update();
+		effectController.onChange(true);
 	}
 
 	@Subscribe
@@ -98,9 +106,10 @@ public class AnimationTransmogPlugin extends Plugin
 		// Make sure the graphics change is from your player
 		Player local = client.getLocalPlayer();
 		if (local == null || e.getActor() != local) return;
+		if (effectController.actor == null) effectController.setPlayer(client.getLocalPlayer(), client);
 
 		// If the game client is trying to override the plugin's effect, re-override it
-		effectController.override();
+		effectController.onChange(false);
 	}
 
 	@Provides

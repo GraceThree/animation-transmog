@@ -75,6 +75,11 @@ public class AnimationTypes {
         animationTypes.put(1167, "StandardSpell");
         animationTypes.put(1169, "StandardSpell");
         animationTypes.put(7855, "StandardSpell");
+
+        animationTypes.put(713, "Alch");
+        animationTypes.put(712, "Alch");
+
+        animationTypes.put(836, "Death");
     }
 
     // Gets the type of animation given its ID number

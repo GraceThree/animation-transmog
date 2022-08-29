@@ -8,6 +8,12 @@ import lombok.RequiredArgsConstructor;
 public enum TeleportAnimation
 {
     DEFAULT("Default"),
+    HAILZAMORAK("Hail Zamorak"),
+    PRAISESARADOMIN("Praise Saradomin"),
+    ANCIENTDISCIPLE("Ancient Disciple"),
+    GLITCH("Glitch"),
+    POMMELSMASH("Pommel Smash"),
+    UHH("???"),
     DARKNESSASCENDS("Darkness Ascends"),
     HDVIBES("2010 Vibes"),
     JAD2OP("Jad 2 OP");

@@ -5,17 +5,10 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum ActionAnimation
+public enum DeathAnimation
 {
     DEFAULT("Default"),
-    ARCANECHOP("Arcane Chop"),
-    ARCANEMINE("Arcane Mine"),
-    BLASTMINE("Blast Mine"),
-    DIG("Dig"),
-    HEADBANG("Headbang"),
-    SMOOTHSCATTER("Smooth Scatter"),
-    BRUTAL("Brutal");
-
+    PLANK("Plank");
 
     private final String option;
 

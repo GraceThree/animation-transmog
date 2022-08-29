@@ -7,6 +7,7 @@ of the two to orchestrate and overall visual effect.
 import com.animationtransmog.AnimationTypes;
 import com.animationtransmog.config.AnimationTransmogConfigManager;
 import net.runelite.api.Actor;
+import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 
 import java.util.*;
@@ -20,13 +21,24 @@ public class EffectController {
 
     HashMap<String, Effect> effects;
 
-    private int currentAnimationId = -1;
-    private int currentGfxId = -1;
+    private int customEffectLength = 0;
+    private int customEffectLengthTimer = 0;
+    private int customAnimationID = -1;
+    private int customAnimationFrame = 0;
+    private int customAnimationStartFrame = 0;
+    private int customAnimationEndFrame = -1;
 
-    private int currentGfxFrame = 0;
-    private int currentGfxEndFrame = -1;
+    private int customGfxID = -1;
+
+    private int customGfxFrame = 0;
+    private int customGfxStartFrame = 0;
+    private int customGfxEndFrame = -1;
+
+    private int customSoundID = -1;
+    private int customSoundFrameDelay = 0;
 
     private boolean isPlaying = false;
+    private boolean isReadyToPlay = false;
 
     public Actor actor = null;
     public Client client = null;
@@ -61,20 +73,30 @@ public class EffectController {
         effects = new HashMap<>();
 
         // Teleport Effects
-        effects.put("Darkness Ascends", new Effect(3945, 1577, -1));
-        effects.put("2010 Vibes", new Effect(3945, 56, -1));
-        effects.put("Jad 2 OP", new Effect(836, 451, -1));
+        effects.put("Hail Zamorak", new Effect(1500, 246, 0, 17, 0, 6, -1, 0, 75));
+        effects.put("Praise Saradomin", new Effect(1500, 247, 0, 17, 0, 6, -1, 0, 75));
+        effects.put("Ancient Disciple", new Effect(1500, 332, 0, 17, 0, 6, -1, 0,75));
+        effects.put("Glitch", new Effect(7040, 482, 0, 12, 0, 48, -1, 0, 75));
+        effects.put("Pommel Smash", new Effect(9131, 559,  0, 35,0, 10, -1, 0, 75));
+        effects.put("???", new Effect(9286, -1, 0, 31, 0, 0, -1, 0, 75));
+        effects.put("Darkness Ascends", new Effect(3945, 1577, 0, 12, 0, 57, -1, 0, 75));
+        effects.put("2010 Vibes", new Effect(3945, 56, 0, 12, 0, 31, -1, 0, 75));
+        effects.put("Jad 2 OP", new Effect(836, 451, 0, 9, 0, 20, -1, 0, 75));
 
         // Action Effects
-        effects.put("Arcane Chop", new Effect(6298, 1063, -1));
-        effects.put("Arcane Mine", new Effect(4411, 739, -1));
-
+        effects.put("Arcane Chop", new Effect(6298, 1063, 0, 40, 0, 40, -1, 0, 150));
+        effects.put("Arcane Mine", new Effect(4411, 739, 0, 20, 15, 35, -1, 0, 150));
         // Credit goes to @Cyborger1 for name and effect IDs
-        effects.put("Smooth Scatter", new Effect(7533, 1103, 0, 0, 45, -1, 0));
+        effects.put("Smooth Scatter", new Effect(7533, 1103, 0, 32, 0, 32, -1, 0, 100));
+        effects.put("Brutal", new Effect(9544, 1103, 0, 13, 0, 32, -1, 0, 40));
+        effects.put("Blast Mine", new Effect(2107, 659, 0, 16, 0, 16, 163, 0, 75));
+        effects.put("Dig", new Effect(830, -1, 0, 7, 0, 0, -1, 0, 40));
+        effects.put("Headbang", new Effect(2108, -1, 0, 48, 0, 0, -1, 0, 75));
 
-        effects.put("Blast Mine", new Effect(2107, 659, 163));
-        effects.put("Dig", new Effect(830, -1, -1));
-        effects.put("Headbang", new Effect(2108, -1, -1));
+        // Death Effects
+        // Credit goes to @geheur for idea
+        effects.put("Plank", new Effect(837, -1, 0, 4, 0, 0, -1, 0, 120));
+
     }
 
     public void setPlayer(Actor actor, Client client)
@@ -83,88 +105,185 @@ public class EffectController {
         this.client = client;
     }
 
-    public void update()
-    {
+    /*
+
+    Features:
+     - Play effect based on detected animation from client
+     - Override animations/gfxs that the client tries to use while the effect is still playing
+     - Hold last frame of animation and/or gfx until the effect length is met
+     - Allow some actions/animations to disrupt the custom effects?
+
+     #############################################
+
+     Play custom effects:
+     - Get animation/gfx IDs that correspond to the IDs the client is trying to use
+     - Set animation and gfx IDs and reset the frames to the start frames
+
+     Overriding client animations/GFXs:
+     - Store IDs of custom animation and gfx being used
+     - Track current frame of animation/gfx
+     - On animation and gfx changes, if they aren't -1 then reset the animation/gfx to the custom ones
+       and set the frames back to what they previously were before being reset to 0
+
+     Hold last frame of animation/gfx till effect is done:
+     - Increment timer each tick
+     - While timer has not reached effect length, hold last frame of animation/gfx if they have ended
+     - After timer has reached effect length, reset animation and gfx to -1 and frames to 0
+
+     ############################################
+
+     Functions:
+
+     OnChange:
+     - Play custom effect
+     - Store IDs of custom effect
+     - Overwrite client animation/gfx if effect is still playing
+
+     OnTick:
+     - Track current frame of animation/gfx
+     - Hold last frame of animation/gfx till effect is done
+
+     */
+
+
+    public void onChange(Boolean animationChange) {
+        // Disable Effect Controller if the animation player is being used
+        if (configManager.getAnimationPlayerOption("SelectedAnimation") != -1 ||
+                configManager.getAnimationPlayerOption("SelectedGFX") != -1) return;
+
         // Check if player is in a region that causes issues for the plugin
         int[] regionIDs = client.getMapRegions();
-        if (!Collections.disjoint(regionBlacklist, Arrays.stream(regionIDs).boxed().collect(Collectors.toList())))
-        {
+        if (!Collections.disjoint(regionBlacklist, Arrays.stream(regionIDs).boxed().collect(Collectors.toList()))) {
             return;
         }
 
-        int currentAnimation = actor.getAnimation();
-        String currentAnimationType = animationTypes.getAnimationType(currentAnimation);
-        if (currentAnimationType == null)
-        {
-            if (currentGfxId != -1)
-            {
-                currentGfxId = -1;
-                currentGfxFrame = 0;
-                currentGfxEndFrame = -1;
-                actor.setGraphic(-1);
-            }
-            isPlaying = false;
-            return;
-        }
+        // If a custom effect is already playing, ignore any future changes
+        if (isPlaying) return;
+
+        // Set the new effect based on the client animation
+        setEffect(actor.getAnimation());
+    }
+
+    void setEffect(int animationID)
+    {
+        // Get plugin config for current animation
+        String currentAnimationType = animationTypes.getAnimationType(animationID);
+        if (currentAnimationType == null) return;
 
         String configOption = configManager.getConfigOption(currentAnimationType);
         if (configOption.equals("Default")) return;
 
+        // Get custom effect for config
         Effect effect = getEffect(configOption);
         if (effect == null) return;
 
+        // Set information for new custom effect
         Animation newAnimation = effect.animation;
         GFX newGfx = effect.gfx;
         Sound newSound = effect.sound;
+        customEffectLength = effect.length;
+        customEffectLengthTimer = 0;
 
-        currentAnimationId = newAnimation.animationId;
-        actor.setAnimation(newAnimation.animationId);
-        actor.setAnimationFrame(newAnimation.startFrame);
+        customAnimationID = newAnimation.animationId;
+        customAnimationFrame = 0;
+        customAnimationStartFrame = newAnimation.startFrame;
+        customAnimationEndFrame = newAnimation.endFrame;
 
         if (newGfx.gfxId != -1)
         {
-            currentGfxId = newGfx.gfxId;
-            currentGfxFrame = 0;
-            currentGfxEndFrame = newGfx.endFrame;
-            actor.setGraphic(newGfx.gfxId);
-            actor.setSpotAnimFrame(newGfx.startFrame);
+            customGfxID = newGfx.gfxId;
+            customGfxFrame = 0;
+            customGfxStartFrame = newGfx.startFrame;
+            customGfxEndFrame = newGfx.endFrame;
         }
 
         if (newSound.soundId != -1)
         {
-            int sceneX = actor.getLocalLocation().getSceneX();
-            int sceneY = actor.getLocalLocation().getSceneY();
-            client.playSoundEffect(newSound.soundId, sceneX, sceneY, 1, newSound.delayFrame);
+            customSoundID = newSound.soundId;
+            customSoundFrameDelay = newSound.delayFrame;
         }
-        isPlaying = true;
+
+        isReadyToPlay = true;
     }
 
-    public void override()
-    {
-        // If gfx is play and client tries to override it, re-override it with effect gfx
-        if (currentGfxId != -1 && actor.getGraphic() != currentGfxId)
-        {
-            actor.setGraphic(currentGfxId);
-        }
-    }
 
-    public void trackGfx()
+    public void onBeforeRender()
     {
+        // If there is a new effect to play, and one isn't already playing, start the new one
+        if (!isPlaying && isReadyToPlay) {
+            playEffect();
+            isPlaying = true;
+            isReadyToPlay = false;
+        }
+
         if (!isPlaying) return;
-        if (actor.getGraphic() == currentGfxId)
-        {
-            if (actor.getSpotAnimFrame() == 0) actor.setSpotAnimFrame(currentGfxFrame+1);
-            currentGfxFrame = actor.getSpotAnimFrame();
 
-            if (currentGfxEndFrame != -1 && currentGfxFrame >= currentGfxEndFrame)
-            {
-                currentGfxId = -1;
-                currentGfxFrame = 0;
-                currentGfxEndFrame = -1;
+        // Track the state of the current animation and overwrite any client animations that try to play
+        int currentAnimationID = actor.getAnimation();
+        if (customAnimationID != -1 && currentAnimationID != customAnimationID)
+        {
+            actor.setAnimation(customAnimationID);
+            actor.setAnimationFrame(customAnimationFrame);
+        }
+        if (currentAnimationID == customAnimationID)
+        {
+            if (customAnimationFrame > customAnimationEndFrame) actor.setAnimationFrame(customAnimationEndFrame);
+            customAnimationFrame = actor.getAnimationFrame();
+
+            //  Once the effect timer has reached the effect length, reset everything
+            if (customEffectLengthTimer >= customEffectLength) {
+                customAnimationID = -1;
+                customAnimationFrame = 0;
+                customAnimationEndFrame = -1;
+                actor.setAnimation(-1);
+                customGfxID = -1;
+                customGfxFrame = 0;
+                customGfxEndFrame = -1;
                 actor.setGraphic(-1);
+                customEffectLength = 0;
+                customEffectLengthTimer = 0;
+                isPlaying = false;
             }
         }
+
+        // Track the state of the current GFX and overwrite any client GFX that try to play
+        int currentGfxID = actor.getGraphic();
+        if (customGfxID != -1 && currentGfxID != customGfxID)
+        {
+            actor.setGraphic(customGfxID);
+            actor.setSpotAnimFrame(customGfxFrame);
+            actor.setGraphicHeight(0);
+        }
+        if (currentGfxID == customGfxID) {
+            if (customGfxFrame > customGfxEndFrame) actor.setSpotAnimFrame(customGfxEndFrame);
+            customGfxFrame = actor.getSpotAnimFrame();
+        }
+
+//        client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "timer:" + String.valueOf(customEffectLengthTimer) + " anim frame:" + String.valueOf(customAnimationFrame) + " gfx frame:" + String.valueOf(customGfxFrame), null);
+        customEffectLengthTimer++;
     }
+
+    void playEffect()
+    {
+        // Set the animation and GFX of the effect as the current ones on the player
+        actor.setAnimation(customAnimationID);
+        actor.setAnimationFrame(customAnimationStartFrame);
+
+        if (customGfxID != -1)
+        {
+            actor.setGraphic(customGfxID);
+            actor.setSpotAnimFrame(customGfxStartFrame);
+            actor.setGraphicHeight(0);
+        }
+
+        if (customSoundID != -1)
+        {
+            int sceneX = actor.getLocalLocation().getSceneX();
+            int sceneY = actor.getLocalLocation().getSceneY();
+            client.playSoundEffect(customSoundID, sceneX, sceneY, 1, customSoundFrameDelay);
+        }
+    }
+
 
     // Gets an Effect given the name of the effect
     Effect getEffect(String effectName)
