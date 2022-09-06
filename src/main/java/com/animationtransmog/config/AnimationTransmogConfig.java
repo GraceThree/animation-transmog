@@ -6,41 +6,60 @@ import net.runelite.client.config.*;
 public interface AnimationTransmogConfig extends Config
 {
 	@ConfigSection(
+			name = "Very Important!",
+			description = "",
+			position = 0
+	)
+	String importantSection = "important";
+
+	@ConfigSection(
 			name = "Skilling",
 			description = "All options for various skilling animations",
-			position = 0
+			position = 1
 	)
 	String skillingSection = "skilling";
 
 	@ConfigSection(
 			name = "Combat",
 			description = "All options for various combat animations",
-			position = 1
+			position = 2
 	)
 	String combatSection = "combat";
 
 	@ConfigSection(
 			name = "Action",
 			description = "All options for various action animations",
-			position = 2
+			position = 3
 	)
 	String actionSection = "action";
 
 	@ConfigSection(
 			name = "Misc",
 			description = "All other options for animations",
-			position = 3
+			position = 4
 	)
 	String miscSection = "misc";
 
 	@ConfigSection(
 			name = "Animation Player",
 			description = "Play a certain animation on demand",
-			position = 4,
+			position = 5,
 			closedByDefault = true
 	)
 	String playerSection = "player";
 
+
+	@ConfigItem(
+			keyName = "swapPluginDBUsage",
+			name = "Enable Multiplayer",
+			description = "This enables the plugin to show custom effects of other players around you, if they also have the plugin installed.",
+			warning = "By enabling this you opt into sending your player name and IP Address to a Third-Party Database in order to store these plugin settings.",
+			section = importantSection
+	)
+	default boolean swapPluginDBUsage()
+	{
+		return false;
+	}
 
 	@ConfigItem(
 			keyName = "swapWoodcutAnimation",

@@ -5,12 +5,14 @@ import java.util.function.Supplier;
 
 public class AnimationTransmogConfigManager
 {
+    public boolean canUseDB = false;
     public HashMap<String, Supplier<String>> configGetters;
     HashMap<String, Supplier<Integer>> animationPlayerConfigGetters;
     public AnimationTransmogConfigManager(AnimationTransmogConfig config)
     {
         configGetters = new HashMap<>();
 
+        canUseDB = config.swapPluginDBUsage();
         configGetters.put("Woodcut", () -> config.swapWoodcutAnimation().getOption());
         configGetters.put("Mine", () -> config.swapMineAnimation().getOption());
         configGetters.put("Alch", () -> config.swapAlchAnimation().getOption());

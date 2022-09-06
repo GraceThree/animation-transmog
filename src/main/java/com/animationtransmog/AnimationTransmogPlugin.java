@@ -10,6 +10,10 @@ import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
 import net.runelite.api.events.*;
+import net.runelite.client.chat.ChatColorType;
+import net.runelite.client.chat.ChatMessageBuilder;
+import net.runelite.client.chat.ChatMessageManager;
+import net.runelite.client.chat.QueuedMessage;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
@@ -17,6 +21,7 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 
 import java.util.HashMap;
+import java.util.function.Function;
 
 @Slf4j
 @PluginDescriptor(
@@ -29,6 +34,10 @@ public class AnimationTransmogPlugin extends Plugin
 
 	@Inject
 	private Client client;
+
+	@Inject
+	private ChatMessageManager chatMessageManager;
+
 	boolean configChanged = true;
 
 	DatabaseManager dbManager;
@@ -39,6 +48,8 @@ public class AnimationTransmogPlugin extends Plugin
 //	PoseController poseController;
 
 	HashMap<String, PlayerController> players;
+
+	String messageFromAnotherThread = "";
 
 	@Override
 	protected void startUp() throws Exception
@@ -64,13 +75,32 @@ public class AnimationTransmogPlugin extends Plugin
 	public void onPlayerSpawned(PlayerSpawned e)
 	{
 		String playerName = e.getActor().getName();
-		HashMap<String, String> settings = dbManager.getSettings(playerName);
-		if (settings.size() == 0) return;
-//		client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Adding " + playerName + " to players", null);
+		addNewPlayer(playerName, e.getActor());
+	}
 
+	void addNewPlayer(String playerName, Actor actor)
+	{
+		if (playerName == null) return;
+		if (!configManager.canUseDB)
+		{
+			if (actor != client.getLocalPlayer()) return;
+			HashMap<String, String> settings = getLocalSettings();
+			PlayerController playerController = new PlayerController(dbManager, animationTypes, actor, client, settings);
+			players.put(playerName, playerController);
 
-		PlayerController playerController = new PlayerController(dbManager, animationTypes, e.getActor(), client);
-		players.put(playerName, playerController);
+//			client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Adding " + playerName + " to players", null);
+
+			return;
+		}
+
+		dbManager.getSettings(playerName, (settings) -> {
+			if (settings.size() == 0) return;
+
+			PlayerController playerController = new PlayerController(dbManager, animationTypes, actor, client, settings);
+			players.put(playerName, playerController);
+
+//			messageFromAnotherThread = "Adding " + playerName + " to players";
+		});
 	}
 
 	@Subscribe
@@ -93,12 +123,33 @@ public class AnimationTransmogPlugin extends Plugin
 			animationPlayerController.setPlayer(client.getLocalPlayer(), client);
 			// Setup poseController
 //			poseController.setPlayer(client.getLocalPlayer());
+
+			if (!configManager.canUseDB)
+			{
+				chatMessageManager.queue(
+					QueuedMessage.builder()
+						.type(ChatMessageType.CONSOLE)
+						.runeLiteFormattedMessage(
+							new ChatMessageBuilder()
+								.append(ChatColorType.HIGHLIGHT)
+								.append("Animation Transmog Plugin: To enable new functionality, please go to the plugin settings and check \"Enable Multiplayer\" on.")
+								.build()
+						)
+						.build()
+				);
+			}
 		}
 	}
 
 	@Subscribe
 	public void onClientTick(ClientTick event)
 	{
+		if (!messageFromAnotherThread.equals(""))
+		{
+			client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", messageFromAnotherThread, null);
+			messageFromAnotherThread = "";
+		}
+
 		// Setup poseController
 		Player local = client.getLocalPlayer();
 		if (local == null || local.getName() == null) return;
@@ -110,13 +161,13 @@ public class AnimationTransmogPlugin extends Plugin
 		// Updated pose
 //		poseController.update();
 
-
 		if (configChanged)
 		{
 			configChanged = false;
-			// If a DB update has been requested, update DB
-			HashMap<String, String> settings = updateDBSettings();
-			players.get(local.getName()).setSettings(settings);
+			HashMap<String, String> settings = updateSettings();
+
+			if (!players.containsKey(local.getName())) addNewPlayer(local.getName(), client.getLocalPlayer());
+			else players.get(local.getName()).setSettings(settings);
 		}
 	}
 
@@ -168,21 +219,29 @@ public class AnimationTransmogPlugin extends Plugin
 		}
 	}
 
-	HashMap<String, String> updateDBSettings()
+	HashMap<String, String> updateSettings()
+	{
+		// Get local settings
+		HashMap<String, String> newSettings = getLocalSettings();
+
+		// Set player's settings in the DB, if opted into the DB
+		String playerName = client.getLocalPlayer().getName();
+		if (configManager.canUseDB) dbManager.setSettings(playerName, newSettings);
+
+		return newSettings;
+	}
+
+	HashMap<String, String> getLocalSettings()
 	{
 		// Generate HashMap of settings for a given player
-		String playerName = client.getLocalPlayer().getName();
-		HashMap<String, String> newSettings = new HashMap<>();
+		HashMap<String, String> settings = new HashMap<>();
 		Object[] keys = configManager.configGetters.keySet().toArray();
 		for (int i = 0; i < configManager.configGetters.size(); i++)
 		{
 			String key = (String)keys[i];
 			String value = configManager.configGetters.get(key).get();
-			newSettings.put(key, value);
+			settings.put(key, value);
 		}
-
-		// Set player's settings in the DB
-		dbManager.setSettings(playerName, newSettings);
-		return newSettings;
+		return settings;
 	}
 }

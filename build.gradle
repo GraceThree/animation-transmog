@@ -15,8 +15,6 @@ def runeLiteVersion = '1.8.32.4'
 dependencies {
 	compileOnly group: 'net.runelite', name:'client', version: runeLiteVersion
 
-	implementation 'org.apache.httpcomponents:httpclient:4.5.13'
-
 	compileOnly 'org.projectlombok:lombok:1.18.4'
 	annotationProcessor 'org.projectlombok:lombok:1.18.4'
 
