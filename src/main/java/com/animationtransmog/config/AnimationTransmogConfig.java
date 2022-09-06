@@ -2,7 +2,7 @@ package com.animationtransmog.config;
 
 import net.runelite.client.config.*;
 
-@ConfigGroup("example")
+@ConfigGroup("animationtransmog")
 public interface AnimationTransmogConfig extends Config
 {
 	@ConfigSection(
@@ -119,16 +119,16 @@ public interface AnimationTransmogConfig extends Config
 		return DeathAnimation.PLANK;
 	}
 
-	@ConfigItem(
-			keyName = "swapMovementMode",
-			name = "Movement Mode",
-			description = "Change the way your character looks when moving around",
-			section = miscSection
-	)
-	default MovementMode swapMovementMode()
-	{
-		return MovementMode.DEFAULT;
-	}
+//	@ConfigItem(
+//			keyName = "swapMovementMode",
+//			name = "Movement Mode",
+//			description = "Change the way your character looks when moving around",
+//			section = miscSection
+//	)
+//	default MovementMode swapMovementMode()
+//	{
+//		return MovementMode.DEFAULT;
+//	}
 
 
 	@Range(min=-1)@ConfigItem(

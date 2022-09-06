@@ -1,9 +1,4 @@
 package com.animationtransmog.effect;
-/*
-Given an actor, the Effect class can control the gfx, animation, and the timing
-of the two to orchestrate and overall visual effect.
- */
-
 import com.animationtransmog.config.AnimationTransmogConfigManager;
 import net.runelite.api.Actor;
 import net.runelite.api.Client;

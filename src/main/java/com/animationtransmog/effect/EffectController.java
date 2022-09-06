@@ -5,7 +5,6 @@ of the two to orchestrate and overall visual effect.
  */
 
 import com.animationtransmog.AnimationTypes;
-import com.animationtransmog.config.AnimationTransmogConfigManager;
 import net.runelite.api.Actor;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
@@ -15,9 +14,10 @@ import java.util.stream.Collectors;
 
 public class EffectController {
     AnimationTypes animationTypes;
-    AnimationTransmogConfigManager configManager;
+    HashMap<String, String> settings;
 
     List<Integer> regionBlacklist;
+    List<String> regionBlacklistAnimations;
 
     HashMap<String, Effect> effects;
 
@@ -43,12 +43,13 @@ public class EffectController {
     public Actor actor = null;
     public Client client = null;
 
-    public EffectController(AnimationTypes animationTypes, AnimationTransmogConfigManager configManager)
+    public EffectController(AnimationTypes animationTypes, HashMap<String, String> settings)
     {
         this.animationTypes = animationTypes;
-        this.configManager = configManager;
+        this.settings = settings;
 
         regionBlacklist = new ArrayList<Integer>();
+        regionBlacklistAnimations = new ArrayList<String>();
 
         // ToA Regions
         regionBlacklist.add(14164);
@@ -68,6 +69,8 @@ public class EffectController {
         regionBlacklist.add(14672);
         regionBlacklist.add(15184);
         regionBlacklist.add(15696);
+
+        regionBlacklistAnimations.add("Teleport");
 
         // Defining Effects
         effects = new HashMap<>();
@@ -105,72 +108,38 @@ public class EffectController {
         this.client = client;
     }
 
-    /*
-
-    Features:
-     - Play effect based on detected animation from client
-     - Override animations/gfxs that the client tries to use while the effect is still playing
-     - Hold last frame of animation and/or gfx until the effect length is met
-     - Allow some actions/animations to disrupt the custom effects?
-
-     #############################################
-
-     Play custom effects:
-     - Get animation/gfx IDs that correspond to the IDs the client is trying to use
-     - Set animation and gfx IDs and reset the frames to the start frames
-
-     Overriding client animations/GFXs:
-     - Store IDs of custom animation and gfx being used
-     - Track current frame of animation/gfx
-     - On animation and gfx changes, if they aren't -1 then reset the animation/gfx to the custom ones
-       and set the frames back to what they previously were before being reset to 0
-
-     Hold last frame of animation/gfx till effect is done:
-     - Increment timer each tick
-     - While timer has not reached effect length, hold last frame of animation/gfx if they have ended
-     - After timer has reached effect length, reset animation and gfx to -1 and frames to 0
-
-     ############################################
-
-     Functions:
-
-     OnChange:
-     - Play custom effect
-     - Store IDs of custom effect
-     - Overwrite client animation/gfx if effect is still playing
-
-     OnTick:
-     - Track current frame of animation/gfx
-     - Hold last frame of animation/gfx till effect is done
-
-     */
-
+    public void setSettings(HashMap<String, String> settings)
+    {
+        this.settings = settings;
+    }
 
     public void onChange(Boolean animationChange) {
         // Disable Effect Controller if the animation player is being used
-        if (configManager.getAnimationPlayerOption("SelectedAnimation") != -1 ||
-                configManager.getAnimationPlayerOption("SelectedGFX") != -1) return;
+//        if (configManager.getAnimationPlayerOption("SelectedAnimation") != -1 ||
+//                configManager.getAnimationPlayerOption("SelectedGFX") != -1) return;
+
+        // Get plugin config for current animation
+        String currentAnimationType = animationTypes.getAnimationType(actor.getAnimation());
+        if (currentAnimationType == null) return;
 
         // Check if player is in a region that causes issues for the plugin
         int[] regionIDs = client.getMapRegions();
         if (!Collections.disjoint(regionBlacklist, Arrays.stream(regionIDs).boxed().collect(Collectors.toList()))) {
-            return;
+            if (regionBlacklistAnimations.contains(currentAnimationType)) return;
         }
 
         // If a custom effect is already playing, ignore any future changes
         if (isPlaying) return;
 
         // Set the new effect based on the client animation
-        setEffect(actor.getAnimation());
+        if (animationChange) setEffect(currentAnimationType);
     }
 
-    void setEffect(int animationID)
+    void setEffect(String currentAnimationType)
     {
-        // Get plugin config for current animation
-        String currentAnimationType = animationTypes.getAnimationType(animationID);
-        if (currentAnimationType == null) return;
+        String configOption = settings.get(currentAnimationType);
+//        client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", actor.getName() + " has " + configOption + " for " + currentAnimationType, null);
 
-        String configOption = configManager.getConfigOption(currentAnimationType);
         if (configOption.equals("Default")) return;
 
         // Get custom effect for config
@@ -259,7 +228,6 @@ public class EffectController {
             customGfxFrame = actor.getSpotAnimFrame();
         }
 
-//        client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "timer:" + String.valueOf(customEffectLengthTimer) + " anim frame:" + String.valueOf(customAnimationFrame) + " gfx frame:" + String.valueOf(customGfxFrame), null);
         customEffectLengthTimer++;
     }
 

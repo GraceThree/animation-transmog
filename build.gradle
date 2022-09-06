@@ -10,10 +10,12 @@ repositories {
 	mavenCentral()
 }
 
-def runeLiteVersion = '1.8.32.1'
+def runeLiteVersion = '1.8.32.4'
 
 dependencies {
 	compileOnly group: 'net.runelite', name:'client', version: runeLiteVersion
+
+	compile 'org.apache.httpcomponents:httpclient:4.5.13'
 
 	compileOnly 'org.projectlombok:lombok:1.18.4'
 	annotationProcessor 'org.projectlombok:lombok:1.18.4'
@@ -23,8 +25,8 @@ dependencies {
 	testImplementation group: 'net.runelite', name:'jshell', version: runeLiteVersion
 }
 
-group = 'com.example'
-version = '1.4.0'
+group = 'com.animationtransmog'
+version = '2.0.0'
 sourceCompatibility = '1.8'
 
 tasks.withType(JavaCompile) {

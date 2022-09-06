@@ -5,7 +5,7 @@ import java.util.function.Supplier;
 
 public class AnimationTransmogConfigManager
 {
-    HashMap<String, Supplier<String>> configGetters;
+    public HashMap<String, Supplier<String>> configGetters;
     HashMap<String, Supplier<Integer>> animationPlayerConfigGetters;
     public AnimationTransmogConfigManager(AnimationTransmogConfig config)
     {
@@ -18,7 +18,7 @@ public class AnimationTransmogConfigManager
         configGetters.put("Teleport", () -> config.swapTeleportAnimation().getOption());
         configGetters.put("AshScatter", () -> config.swapAshScatterAnimation().getOption());
         configGetters.put("Death", () -> config.swapDeathAnimation().getOption());
-        configGetters.put("Movement", () -> config.swapMovementMode().getOption());
+//        configGetters.put("Movement", () -> config.swapMovementMode().getOption());
 
         animationPlayerConfigGetters = new HashMap<>();
         animationPlayerConfigGetters.put("SelectedAnimation", config::selectedAnimation);
