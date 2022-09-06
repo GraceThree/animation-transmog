@@ -66,7 +66,7 @@ public class AnimationTransmogPlugin extends Plugin
 		String playerName = e.getActor().getName();
 		HashMap<String, String> settings = dbManager.getSettings(playerName);
 		if (settings.size() == 0) return;
-		client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Adding " + playerName + " to players", null);
+//		client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Adding " + playerName + " to players", null);
 
 
 		PlayerController playerController = new PlayerController(dbManager, animationTypes, e.getActor(), client);
@@ -79,7 +79,7 @@ public class AnimationTransmogPlugin extends Plugin
 		String playerName = e.getActor().getName();
 		if (players.containsKey(playerName))
 		{
-			client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Removing " + playerName + " from players", null);
+//			client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Removing " + playerName + " from players", null);
 			players.remove(playerName);
 		}
 	}
