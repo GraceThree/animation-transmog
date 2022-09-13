@@ -39,6 +39,7 @@ public class AnimationTransmogPlugin extends Plugin
 	private ChatMessageManager chatMessageManager;
 
 	boolean configChanged = true;
+	boolean welcomeMessagePlayed = false;
 
 	DatabaseManager dbManager;
 
@@ -81,7 +82,7 @@ public class AnimationTransmogPlugin extends Plugin
 	void addNewPlayer(String playerName, Actor actor)
 	{
 		if (playerName == null) return;
-		if (!configManager.canUseDB)
+		if (!configManager.getCanUseDB())
 		{
 			if (actor != client.getLocalPlayer()) return;
 			HashMap<String, String> settings = getLocalSettings();
@@ -124,8 +125,10 @@ public class AnimationTransmogPlugin extends Plugin
 			// Setup poseController
 //			poseController.setPlayer(client.getLocalPlayer());
 
-			if (!configManager.canUseDB)
+			if (!configManager.getCanUseDB() && !welcomeMessagePlayed)
 			{
+				welcomeMessagePlayed = true;
+
 				chatMessageManager.queue(
 					QueuedMessage.builder()
 						.type(ChatMessageType.CONSOLE)
@@ -212,7 +215,7 @@ public class AnimationTransmogPlugin extends Plugin
 	@Subscribe
 	public void onConfigChanged(ConfigChanged e)
 	{
-		// When a setting in thte plugin is changed, request a DB update
+		// When a setting in the plugin is changed, request a DB update
 		if (e.getGroup().equals("animationtransmog"))
 		{
 			configChanged = true;
@@ -226,7 +229,7 @@ public class AnimationTransmogPlugin extends Plugin
 
 		// Set player's settings in the DB, if opted into the DB
 		String playerName = client.getLocalPlayer().getName();
-		if (configManager.canUseDB) dbManager.setSettings(playerName, newSettings);
+		if (configManager.getCanUseDB()) dbManager.setSettings(playerName, newSettings);
 
 		return newSettings;
 	}
