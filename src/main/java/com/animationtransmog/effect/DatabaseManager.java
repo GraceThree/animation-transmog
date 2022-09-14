@@ -40,17 +40,18 @@ public class DatabaseManager {
                     if (body == null) return;
 
                     String bodyString = body.string();
-                    if (bodyString.equals("null")) return;
-
-                    // Parse JSON response into HashMap
-                    String responseString =  bodyString.substring(1, bodyString.toString().length() - 1);
-                    String[] responseStringList = responseString.split(",");
-                    for (String keyVal : responseStringList)
+                    if (!bodyString.equals("null"))
                     {
-                        String[] keyValList = keyVal.split(":");
-                        String key = keyValList[0].substring(1, keyValList[0].length() - 1);
-                        String value = keyValList[1].substring(1, keyValList[1].length() - 1);
-                        newSettings.put(key, value);
+                        // Parse JSON response into HashMap
+                        String responseString = bodyString.substring(1, bodyString.toString().length() - 1);
+                        String[] responseStringList = responseString.split(",");
+                        for (String keyVal : responseStringList)
+                        {
+                            String[] keyValList = keyVal.split(":");
+                            String key = keyValList[0].substring(1, keyValList[0].length() - 1);
+                            String value = keyValList[1].substring(1, keyValList[1].length() - 1);
+                            newSettings.put(key, value);
+                        }
                     }
                     body.close();
                     callback.accept(newSettings);
@@ -78,7 +79,7 @@ public class DatabaseManager {
         MediaType mediaType = MediaType.parse("application/json");
         RequestBody body = RequestBody.create(mediaType, result.toString());
         Request request = new Request.Builder()
-                .url("https://runelite-animation-transmog-default-rtdb.firebaseio.com/players/" + playerName.replace(" ", "+") + ".json")
+                .url("https://runelite-animation-transmog-default-rtdb.firebaseio.com/players/" + playerName.replace(" ", "+") + ".json?print=silent")
                 .put(body)
                 .addHeader("Content-Type", "application/json")
                 .build();

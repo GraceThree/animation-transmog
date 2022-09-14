@@ -82,36 +82,41 @@ public class AnimationTransmogPlugin extends Plugin
 	void addNewPlayer(String playerName, Actor actor)
 	{
 		if (playerName == null) return;
-		if (!configManager.getCanUseDB())
+
+		// If not using the DB, or player is the local player, get settings locally
+		if (!configManager.getCanUseDB() || actor == client.getLocalPlayer())
 		{
+			// If not using the DB, ignore other players
 			if (actor != client.getLocalPlayer()) return;
+
 			HashMap<String, String> settings = getLocalSettings();
 			PlayerController playerController = new PlayerController(dbManager, animationTypes, actor, client, settings);
 			players.put(playerName, playerController);
 
-//			client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Adding " + playerName + " to players", null);
-
 			return;
 		}
 
-		dbManager.getSettings(playerName, (settings) -> {
-			if (settings.size() == 0) return;
-
-			PlayerController playerController = new PlayerController(dbManager, animationTypes, actor, client, settings);
-			players.put(playerName, playerController);
-
-//			messageFromAnotherThread = "Adding " + playerName + " to players";
-		});
-	}
-
-	@Subscribe
-	public void onPlayerDespawned(PlayerDespawned e)
-	{
-		String playerName = e.getActor().getName();
-		if (players.containsKey(playerName))
+		// Only add new player if they are not already in the players Hash Map
+		if (!players.containsKey(playerName))
 		{
-//			client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Removing " + playerName + " from players", null);
-			players.remove(playerName);
+			dbManager.getSettings(playerName, (settings) -> {
+				// If they are not in the DB, just add a null under their name to be ignored
+				if (settings.size() == 0)
+				{
+					players.put(playerName, null);
+					return;
+				}
+				PlayerController playerController = new PlayerController(dbManager, animationTypes, actor, client, settings);
+				players.put(playerName, playerController);
+			});
+		}
+		else
+		{
+			// If player already exists in Hash Map, and has a valid PlayerController, simply update player actor
+			PlayerController playerController = players.get(playerName);
+			if (playerController == null) return;
+
+			playerController.effectController.setPlayer(actor, client);
 		}
 	}
 
@@ -128,7 +133,6 @@ public class AnimationTransmogPlugin extends Plugin
 			if (!configManager.getCanUseDB() && !welcomeMessagePlayed)
 			{
 				welcomeMessagePlayed = true;
-
 				chatMessageManager.queue(
 					QueuedMessage.builder()
 						.type(ChatMessageType.CONSOLE)
@@ -164,6 +168,7 @@ public class AnimationTransmogPlugin extends Plugin
 		// Updated pose
 //		poseController.update();
 
+		// When the local plugin configs are changed, update the DB if applicable, and then update the playerController
 		if (configChanged)
 		{
 			configChanged = false;
@@ -180,7 +185,7 @@ public class AnimationTransmogPlugin extends Plugin
 		// For each player stored, run the player's effectController
 		for (PlayerController player : players.values())
 		{
-			player.effectController.onBeforeRender();
+			if (player != null) player.effectController.onBeforeRender();
 		}
 	}
 

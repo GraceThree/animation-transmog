@@ -33,12 +33,12 @@ public interface AnimationTransmogConfig extends Config
 	)
 	String actionSection = "action";
 
-	@ConfigSection(
-			name = "Misc",
-			description = "All other options for animations",
-			position = 4
-	)
-	String miscSection = "misc";
+//	@ConfigSection(
+//			name = "Misc",
+//			description = "All other options for animations",
+//			position = 4
+//	)
+//	String miscSection = "misc";
 
 	@ConfigSection(
 			name = "Animation Player",
