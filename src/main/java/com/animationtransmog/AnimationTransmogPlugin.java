@@ -21,6 +21,7 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.function.Function;
 
 @Slf4j
@@ -46,7 +47,6 @@ public class AnimationTransmogPlugin extends Plugin
 	AnimationTransmogConfigManager configManager;
 	AnimationTypes animationTypes;
 	AnimationPlayerController animationPlayerController;
-//	PoseController poseController;
 
 	HashMap<String, PlayerController> players;
 
@@ -61,15 +61,12 @@ public class AnimationTransmogPlugin extends Plugin
 		animationTypes = new AnimationTypes();
 		animationPlayerController = new AnimationPlayerController(configManager);
 		players = new HashMap<>();
-//		poseController = new PoseController(configManager);
 	}
 
 	@Override
 	protected void shutDown() throws Exception
 	{
 		log.info("Animation Transmog stopped!");
-		// If you disable the plugin, try and reset the idle pose
-//		poseController.reset();
 	}
 
 	@Subscribe
@@ -127,8 +124,6 @@ public class AnimationTransmogPlugin extends Plugin
 		{
 			// Setup animationPlayerController
 			animationPlayerController.setPlayer(client.getLocalPlayer(), client);
-			// Setup poseController
-//			poseController.setPlayer(client.getLocalPlayer());
 
 			if (!configManager.getCanUseDB() && !welcomeMessagePlayed)
 			{
@@ -157,16 +152,17 @@ public class AnimationTransmogPlugin extends Plugin
 			messageFromAnotherThread = "";
 		}
 
-		// Setup poseController
 		Player local = client.getLocalPlayer();
 		if (local == null || local.getName() == null) return;
-//		if (poseController.actor == null) poseController.setPlayer(local);
 
 		// Update animation player
 		animationPlayerController.update();
 
-		// Updated pose
-//		poseController.update();
+		// Update timers on player's effect controllers
+		for (PlayerController player : players.values())
+		{
+			if (player != null) player.effectController.updateTimer();
+		}
 
 		// When the local plugin configs are changed, update the DB if applicable, and then update the playerController
 		if (configChanged)

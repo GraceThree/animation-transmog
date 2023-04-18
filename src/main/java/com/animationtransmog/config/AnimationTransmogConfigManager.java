@@ -20,7 +20,6 @@ public class AnimationTransmogConfigManager
         configGetters.put("Teleport", () -> config.swapTeleportAnimation().getOption());
         configGetters.put("AshScatter", () -> config.swapAshScatterAnimation().getOption());
         configGetters.put("Death", () -> config.swapDeathAnimation().getOption());
-//        configGetters.put("Movement", () -> config.swapMovementMode().getOption());
 
         animationPlayerConfigGetters = new HashMap<>();
         animationPlayerConfigGetters.put("SelectedAnimation", config::selectedAnimation);

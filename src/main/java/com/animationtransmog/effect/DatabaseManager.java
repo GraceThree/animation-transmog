@@ -3,6 +3,7 @@ package com.animationtransmog.effect;
 import okhttp3.*;
 
 import java.io.*;
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.function.Consumer;
 
@@ -50,7 +51,7 @@ public class DatabaseManager {
                             String[] keyValList = keyVal.split(":");
                             String key = keyValList[0].substring(1, keyValList[0].length() - 1);
                             String value = keyValList[1].substring(1, keyValList[1].length() - 1);
-                            newSettings.put(key, value);
+                            if (!key.equals("lastUpdated")) newSettings.put(key, value);
                         }
                     }
                     body.close();
@@ -62,18 +63,19 @@ public class DatabaseManager {
 
     public void setSettings(String playerName, HashMap<String, String> newSettings)
     {
-
         // Convert HashMap to JSON string
         StringBuilder result = new StringBuilder();
         result.append("{");
-        boolean firstElement = true;
         for (HashMap.Entry<String, String> entry : newSettings.entrySet()) {
-            if (!firstElement) result.append(",");
-            else firstElement = false;
-
-            result.append('"').append(entry.getKey()).append('"').append(":").append('"').append(entry.getValue()).append('"');
+            result.append('"').append(entry.getKey()).append('"')
+                    .append(":")
+                    .append('"').append(entry.getValue()).append('"')
+                    .append(",");
         }
-        result.append("}");
+        result.append('"').append("lastUpdated").append('"')
+                .append(":")
+                .append('"').append(new Timestamp(System.currentTimeMillis()).toInstant()).append('"')
+                .append("}");
 
         // Generate PUT request to update database
         MediaType mediaType = MediaType.parse("application/json");

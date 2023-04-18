@@ -5,9 +5,8 @@ of the two to orchestrate and overall visual effect.
  */
 
 import com.animationtransmog.AnimationTypes;
-import net.runelite.api.Actor;
-import net.runelite.api.ChatMessageType;
-import net.runelite.api.Client;
+import net.runelite.api.*;
+import net.runelite.api.coords.WorldPoint;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -23,6 +22,7 @@ public class EffectController {
 
     private int customEffectLength = 0;
     private int customEffectLengthTimer = 0;
+    private List<Integer> customEffectSpotAnimBlockList = new ArrayList<>();
     private int customAnimationID = -1;
     private int customAnimationFrame = 0;
     private int customAnimationStartFrame = 0;
@@ -39,6 +39,8 @@ public class EffectController {
 
     private boolean isPlaying = false;
     private boolean isReadyToPlay = false;
+
+    private WorldPoint effectLocation = null;
 
     public Actor actor = null;
     public Client client = null;
@@ -76,29 +78,29 @@ public class EffectController {
         effects = new HashMap<>();
 
         // Teleport Effects
-        effects.put("Hail Zamorak", new Effect(1500, 246, 0, 17, 0, 6, -1, 0, 75));
-        effects.put("Praise Saradomin", new Effect(1500, 247, 0, 17, 0, 6, -1, 0, 75));
-        effects.put("Ancient Disciple", new Effect(1500, 332, 0, 17, 0, 6, -1, 0,75));
-        effects.put("Glitch", new Effect(7040, 482, 0, 12, 0, 48, -1, 0, 75));
-        effects.put("Pommel Smash", new Effect(9131, 559,  0, 35,0, 10, -1, 0, 75));
-        effects.put("???", new Effect(9286, -1, 0, 31, 0, 0, -1, 0, 75));
-        effects.put("Darkness Ascends", new Effect(3945, 1577, 0, 12, 0, 57, -1, 0, 75));
-        effects.put("2010 Vibes", new Effect(3945, 56, 0, 12, 0, 31, -1, 0, 75));
-        effects.put("Jad 2 OP", new Effect(836, 451, 0, 9, 0, 20, -1, 0, 75));
+        effects.put("Hail Zamorak", new Effect(1500, 246, 0, 17, 0, 6, -1, 0, 150));
+        effects.put("Praise Saradomin", new Effect(1500, 247, 0, 17, 0, 6, -1, 0, 150));
+        effects.put("Ancient Disciple", new Effect(1500, 332, 0, 17, 0, 6, -1, 0,150));
+        effects.put("Glitch", new Effect(7040, 482, 0, 12, 0, 48, -1, 0, 150));
+        effects.put("Pommel Smash", new Effect(9131, 559,  0, 35,0, 10, -1, 0, 150));
+        effects.put("???", new Effect(9286, -1, 0, 31, 0, 0, -1, 0, 150));
+        effects.put("Darkness Ascends", new Effect(3945, 1577, 0, 12, 0, 57, -1, 0, 150));
+        effects.put("2010 Vibes", new Effect(3945, 56, 0, 12, 0, 31, -1, 0, 150));
+        effects.put("Jad 2 OP", new Effect(836, 451, 0, 9, 0, 20, -1, 0, 150));
 
         // Action Effects
-        effects.put("Arcane Chop", new Effect(6298, 1063, 0, 40, 0, 40, -1, 0, 150));
-        effects.put("Arcane Mine", new Effect(4411, 739, 0, 20, 15, 35, -1, 0, 150));
+        effects.put("Arcane Chop", new Effect(6298, 1063, 0, 159, 0, 40, -1, 0, -1));
+        effects.put("Arcane Mine", new Effect(4411, 739, 0, 45, 15, 35, -1, 0, -1));
         // Credit goes to @Cyborger1 for name and effect IDs
-        effects.put("Smooth Scatter", new Effect(7533, 1103, 0, 32, 0, 32, -1, 0, 100));
-        effects.put("Brutal", new Effect(9544, 1103, 0, 13, 0, 32, -1, 0, 40));
-        effects.put("Blast Mine", new Effect(2107, 659, 0, 16, 0, 16, 163, 0, 75));
-        effects.put("Dig", new Effect(830, -1, 0, 7, 0, 0, -1, 0, 40));
-        effects.put("Headbang", new Effect(2108, -1, 0, 48, 0, 0, -1, 0, 75));
+        effects.put("Smooth Scatter", new Effect(7533, 1103, 0, 32, 0, 32, -1, 0, -1));
+        effects.put("Brutal", new Effect(9544, 1103, 0, 13, 0, 32, -1, 0, -1));
+        effects.put("Blast Mine", new Effect(2107, 659, 0, 16, 0, 16, 163, 0, -1));
+        effects.put("Dig", new Effect(830, -1, 0, 7, 0, 0, -1, 0, -1));
+        effects.put("Headbang", new Effect(2108, -1, 0, 48, 0, 0, -1, 0, -1));
 
         // Death Effects
         // Credit goes to @geheur for idea
-        effects.put("Plank", new Effect(837, -1, 0, 4, 0, 0, -1, 0, 120));
+        effects.put("Plank", new Effect(837, -1, 0, 4, 0, 0, -1, 0, 200));
 
     }
 
@@ -114,12 +116,9 @@ public class EffectController {
     }
 
     public void onChange(Boolean animationChange) {
-        // Disable Effect Controller if the animation player is being used
-//        if (configManager.getAnimationPlayerOption("SelectedAnimation") != -1 ||
-//                configManager.getAnimationPlayerOption("SelectedGFX") != -1) return;
-
         // Get plugin config for current animation
         String currentAnimationType = animationTypes.getAnimationType(actor.getAnimation());
+        List<Integer> currentAnimationTypeSpotAnimIDs = animationTypes.getAnimationTypeSpotAnimIds(currentAnimationType);
         if (currentAnimationType == null) return;
 
         // Check if player is in a region that causes issues for the plugin
@@ -129,16 +128,16 @@ public class EffectController {
         }
 
         // If a custom effect is already playing, ignore any future changes
+        // TODO: Or if the new effect's animation type is different from the current one
         if (isPlaying) return;
 
         // Set the new effect based on the client animation
-        if (animationChange) setEffect(currentAnimationType);
+        if (animationChange) setEffect(currentAnimationType, currentAnimationTypeSpotAnimIDs);
     }
 
-    void setEffect(String currentAnimationType)
+    void setEffect(String currentAnimationType, List<Integer> currentAnimationTypeSpotAnimIDs)
     {
         String configOption = settings.get(currentAnimationType);
-//        client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", actor.getName() + " has " + configOption + " for " + currentAnimationType, null);
 
         if (configOption.equals("Default")) return;
 
@@ -152,6 +151,7 @@ public class EffectController {
         Sound newSound = effect.sound;
         customEffectLength = effect.length;
         customEffectLengthTimer = 0;
+        customEffectSpotAnimBlockList = currentAnimationTypeSpotAnimIDs;
 
         customAnimationID = newAnimation.animationId;
         customAnimationFrame = 0;
@@ -179,56 +179,81 @@ public class EffectController {
     public void onBeforeRender()
     {
         // If there is a new effect to play, and one isn't already playing, start the new one
-        if (!isPlaying && isReadyToPlay) {
-            playEffect();
-            isPlaying = true;
-            isReadyToPlay = false;
+        if (!isPlaying) {
+            if (isReadyToPlay)
+            {
+                playEffect();
+                isPlaying = true;
+                isReadyToPlay = false;
+            }
+            return;
         }
 
-        if (!isPlaying) return;
+        //  Once the effect timer has reached the effect length, or player has moved, reset everything
+        if (
+                (customEffectLength != -1 && customEffectLengthTimer >= customEffectLength) ||
+                (customEffectLength == -1 && customAnimationFrame >= customAnimationEndFrame) ||
+                !effectLocation.equals(actor.getWorldLocation())
+        ) {
+            customAnimationID = -1;
+            customAnimationFrame = 0;
+            customAnimationEndFrame = -1;
+            actor.setAnimation(-1);
+
+            customGfxFrame = 0;
+            customGfxEndFrame = -1;
+            actor.removeSpotAnim(customGfxID);
+            customGfxID = -1;
+
+            customEffectLength = 0;
+            customEffectLengthTimer = 0;
+
+            effectLocation = null;
+
+            isPlaying = false;
+            return;
+        }
 
         // Track the state of the current animation and overwrite any client animations that try to play
         int currentAnimationID = actor.getAnimation();
-        if (customAnimationID != -1 && currentAnimationID != customAnimationID)
+        if (customAnimationID != -1)
         {
-            actor.setAnimation(customAnimationID);
-            actor.setAnimationFrame(customAnimationFrame);
-        }
-        if (currentAnimationID == customAnimationID)
-        {
-            if (customAnimationFrame > customAnimationEndFrame) actor.setAnimationFrame(customAnimationEndFrame);
-            customAnimationFrame = actor.getAnimationFrame();
-
-            //  Once the effect timer has reached the effect length, reset everything
-            if (customEffectLengthTimer >= customEffectLength) {
-                customAnimationID = -1;
-                customAnimationFrame = 0;
-                customAnimationEndFrame = -1;
-                actor.setAnimation(-1);
-                customGfxID = -1;
-                customGfxFrame = 0;
-                customGfxEndFrame = -1;
-                actor.setGraphic(-1);
-                customEffectLength = 0;
-                customEffectLengthTimer = 0;
-                isPlaying = false;
+            if (currentAnimationID != customAnimationID) {
+                actor.setAnimation(customAnimationID);
+                actor.setAnimationFrame(customAnimationFrame);
+            }
+            if (currentAnimationID == customAnimationID)
+            {
+                if (customAnimationFrame > customAnimationEndFrame) actor.setAnimationFrame(customAnimationEndFrame);
+                customAnimationFrame = actor.getAnimationFrame();
             }
         }
 
-        // Track the state of the current GFX and overwrite any client GFX that try to play
-        int currentGfxID = actor.getGraphic();
-        if (customGfxID != -1 && currentGfxID != customGfxID)
-        {
-            actor.setGraphic(customGfxID);
-            actor.setSpotAnimFrame(customGfxFrame);
-            actor.setGraphicHeight(0);
-        }
-        if (currentGfxID == customGfxID) {
-            if (customGfxFrame > customGfxEndFrame) actor.setSpotAnimFrame(customGfxEndFrame);
-            customGfxFrame = actor.getSpotAnimFrame();
+        // Track the state of the current GFX
+        IterableHashTable<ActorSpotAnim> spotAnims = actor.getSpotAnims();
+        if (actor.hasSpotAnim(customGfxID)) {
+            if (customGfxFrame > customGfxEndFrame) spotAnims.get(customGfxID).setFrame(customGfxEndFrame);
+            customGfxFrame = spotAnims.get(customGfxID).getFrame();
+//            client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Spot Anim:" + customGfxID + " ?? " + spotAnims.get(customGfxID).hashCode() + " ?? " + spotAnims.get(customGfxID).getHash(), null);
+
         }
 
-        customEffectLengthTimer++;
+        // Block any spot anims that are in the block list
+        if (spotAnims != null)
+        {
+            for (ActorSpotAnim spotAnim : spotAnims)
+            {
+                if (customEffectSpotAnimBlockList.contains(spotAnim.getId()))
+                {
+                    actor.removeSpotAnim((int)spotAnim.getHash());
+                }
+            }
+        }
+    }
+
+    public void updateTimer()
+    {
+        if (isPlaying) customEffectLengthTimer++;
     }
 
     void playEffect()
@@ -239,9 +264,8 @@ public class EffectController {
 
         if (customGfxID != -1)
         {
-            actor.setGraphic(customGfxID);
-            actor.setSpotAnimFrame(customGfxStartFrame);
-            actor.setGraphicHeight(0);
+            actor.createSpotAnim(customGfxID, customGfxID, 0, 0);
+            actor.getSpotAnims().get(customGfxID).setFrame(customGfxStartFrame);
         }
 
         if (customSoundID != -1)
@@ -250,6 +274,8 @@ public class EffectController {
             int sceneY = actor.getLocalLocation().getSceneY();
             client.playSoundEffect(customSoundID, sceneX, sceneY, 1, customSoundFrameDelay);
         }
+
+        effectLocation = actor.getWorldLocation();
     }
 
 

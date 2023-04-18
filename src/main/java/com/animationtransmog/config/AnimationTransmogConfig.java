@@ -33,13 +33,6 @@ public interface AnimationTransmogConfig extends Config
 	)
 	String actionSection = "action";
 
-//	@ConfigSection(
-//			name = "Misc",
-//			description = "All other options for animations",
-//			position = 4
-//	)
-//	String miscSection = "misc";
-
 	@ConfigSection(
 			name = "Animation Player",
 			description = "Play a certain animation on demand",
@@ -137,17 +130,6 @@ public interface AnimationTransmogConfig extends Config
 	{
 		return DeathAnimation.PLANK;
 	}
-
-//	@ConfigItem(
-//			keyName = "swapMovementMode",
-//			name = "Movement Mode",
-//			description = "Change the way your character looks when moving around",
-//			section = miscSection
-//	)
-//	default MovementMode swapMovementMode()
-//	{
-//		return MovementMode.DEFAULT;
-//	}
 
 
 	@Range(min=-1)@ConfigItem(

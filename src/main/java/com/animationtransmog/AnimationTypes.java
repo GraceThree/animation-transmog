@@ -1,17 +1,23 @@
 package com.animationtransmog;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 public class AnimationTypes {
     HashMap<Integer, String> animationTypes;
+    HashMap<String, List<Integer>> animationTypeSpotAnimIds;
 
     public AnimationTypes()
     {
         // Defining animation types
         animationTypes = new HashMap<>();
+        animationTypeSpotAnimIds = new HashMap<>();
+
 
         animationTypes.put(4069, "Teleport");
         animationTypes.put(714, "Teleport");
+        animationTypeSpotAnimIds.put("Teleport", Arrays.asList(111, 678));
 
         animationTypes.put(2295, "AshScatter");
 
@@ -78,6 +84,7 @@ public class AnimationTypes {
 
         animationTypes.put(713, "Alch");
         animationTypes.put(712, "Alch");
+        animationTypeSpotAnimIds.put("Alch", Arrays.asList(112, 113));
 
         animationTypes.put(836, "Death");
     }
@@ -86,5 +93,9 @@ public class AnimationTypes {
     public String getAnimationType(int animationID)
     {
         return animationTypes.get(animationID);
+    }
+    public List<Integer> getAnimationTypeSpotAnimIds(String animationType)
+    {
+        return animationTypeSpotAnimIds.get(animationType);
     }
 }
