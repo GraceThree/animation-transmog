@@ -11,7 +11,8 @@ import net.runelite.api.coords.WorldPoint;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class EffectController {
+public class EffectController
+{
     AnimationTypes animationTypes;
     HashMap<String, String> settings;
 
@@ -125,7 +126,8 @@ public class EffectController {
 
         // Check if player is in a region that causes issues for the plugin
         int[] regionIDs = client.getMapRegions();
-        if (!Collections.disjoint(regionBlacklist, Arrays.stream(regionIDs).boxed().collect(Collectors.toList()))) {
+        if (!Collections.disjoint(regionBlacklist, Arrays.stream(regionIDs).boxed().collect(Collectors.toList())))
+        {
             if (regionBlacklistAnimations.contains(currentAnimationType)) return;
         }
 
@@ -183,7 +185,8 @@ public class EffectController {
     public void onBeforeRender()
     {
         // If there is a new effect to play, and one isn't already playing, start the new one
-        if (!isPlaying) {
+        if (!isPlaying)
+        {
             if (isReadyToPlay)
             {
                 playEffect();
@@ -196,7 +199,8 @@ public class EffectController {
                 (customEffectLength != -1 && customEffectLengthTimer >= customEffectLength) ||
                 (customEffectLength == -1 && customAnimationFrame >= customAnimationEndFrame) ||
                 !effectLocation.equals(actor.getWorldLocation())
-        ) {
+        )
+        {
             resetController();
             return;
         }
@@ -205,7 +209,8 @@ public class EffectController {
         int currentAnimationID = actor.getAnimation();
         if (customAnimationID != -1)
         {
-            if (currentAnimationID != customAnimationID) {
+            if (currentAnimationID != customAnimationID)
+            {
                 actor.setAnimation(customAnimationID);
                 actor.setAnimationFrame(customAnimationFrame);
             }
@@ -218,7 +223,8 @@ public class EffectController {
 
         // Track the state of the current GFX
         IterableHashTable<ActorSpotAnim> spotAnims = actor.getSpotAnims();
-        if (actor.hasSpotAnim(customGfxID)) {
+        if (actor.hasSpotAnim(customGfxID))
+        {
             if (customGfxFrame > customGfxEndFrame) spotAnims.get(customGfxID).setFrame(customGfxEndFrame);
             customGfxFrame = spotAnims.get(customGfxID).getFrame();
 

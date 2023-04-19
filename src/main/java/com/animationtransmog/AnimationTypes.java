@@ -5,7 +5,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-public class AnimationTypes {
+public class AnimationTypes
+{
     HashMap<Integer, String> animationTypes;
     HashMap<String, List<Integer>> animationTypeSpotAnimIds;
 

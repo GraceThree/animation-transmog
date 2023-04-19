@@ -6,7 +6,8 @@ import net.runelite.api.Client;
 
 import java.util.*;
 
-public class PlayerController {
+public class PlayerController
+{
 
     public EffectController effectController;
     HashMap<String, String> settings;

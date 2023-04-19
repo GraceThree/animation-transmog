@@ -3,7 +3,8 @@ import com.animationtransmog.config.AnimationTransmogConfigManager;
 import net.runelite.api.Actor;
 import net.runelite.api.Client;
 
-public class AnimationPlayerController {
+public class AnimationPlayerController
+{
     AnimationTransmogConfigManager configManager;
 
     private int selectedAnimationId = -1;
@@ -12,7 +13,8 @@ public class AnimationPlayerController {
     public Actor actor = null;
     public Client client = null;
 
-    public AnimationPlayerController(AnimationTransmogConfigManager configManager) {
+    public AnimationPlayerController(AnimationTransmogConfigManager configManager)
+    {
         this.configManager = configManager;
     }
 

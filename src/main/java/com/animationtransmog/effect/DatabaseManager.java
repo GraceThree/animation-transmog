@@ -8,7 +8,8 @@ import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.function.Consumer;
 
-public class DatabaseManager {
+public class DatabaseManager
+{
     OkHttpClient client;
 
     public DatabaseManager()
@@ -27,17 +28,23 @@ public class DatabaseManager {
                 .build();
 
         // Execute request on new thread
-        client.newCall(request).enqueue(new Callback() {
+        client.newCall(request).enqueue(new Callback()
+        {
             @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+            public void onFailure(@NonNull Call call, @NonNull IOException e)
+            {
                 e.printStackTrace();
             }
 
             @Override
-            public void onResponse(@NonNull Call call, @NonNull final Response response) throws IOException {
-                if (!response.isSuccessful()) {
+            public void onResponse(@NonNull Call call, @NonNull final Response response) throws IOException
+            {
+                if (!response.isSuccessful())
+                {
                     throw new IOException("Unexpected code " + response);
-                } else {
+                }
+                else
+                {
                     ResponseBody body = response.body();
                     if (body == null) return;
 
@@ -67,7 +74,8 @@ public class DatabaseManager {
         // Convert HashMap to JSON string
         StringBuilder result = new StringBuilder();
         result.append("{");
-        for (HashMap.Entry<String, String> entry : newSettings.entrySet()) {
+        for (HashMap.Entry<String, String> entry : newSettings.entrySet())
+        {
             result.append('"').append(entry.getKey()).append('"')
                     .append(":")
                     .append('"').append(entry.getValue()).append('"')
@@ -88,15 +96,19 @@ public class DatabaseManager {
                 .build();
 
         // Execute request on new thread
-        client.newCall(request).enqueue(new Callback() {
+        client.newCall(request).enqueue(new Callback()
+        {
             @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+            public void onFailure(@NonNull Call call, @NonNull IOException e)
+            {
                 e.printStackTrace();
             }
 
             @Override
-            public void onResponse(@NonNull Call call, @NonNull final Response response) throws IOException {
-                if (!response.isSuccessful()) {
+            public void onResponse(@NonNull Call call, @NonNull final Response response) throws IOException
+            {
+                if (!response.isSuccessful())
+                {
                     throw new IOException("Unexpected code " + response);
                 }
                 response.close();

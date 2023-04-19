@@ -1,6 +1,7 @@
 package com.animationtransmog.effect;
 
-public class Effect {
+public class Effect
+{
     Animation animation;
     GFX gfx;
     Sound sound;
