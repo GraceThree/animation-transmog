@@ -29,10 +29,6 @@ public class AnimationTransmogConfigManager
         animationPlayerConfigGetters.put("SelectedGFXHeight", config::selectedGFXHeight);
     }
 
-    public String getConfigOption(String configType)
-    {
-        return configGetters.get(configType).get();
-    }
     public int getAnimationPlayerOption(String configType)
     {
         return animationPlayerConfigGetters.get(configType).get();

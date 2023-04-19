@@ -45,11 +45,9 @@ public class AnimationPlayerController {
         if(tempAnimationId != selectedAnimationId || currentAnimation == -1) actor.setAnimation(tempAnimationId);
 
         // Create selected GFX
-        int currentGFX = actor.getGraphic();
-        actor.setGraphicHeight(tempGFXHeight);
-        if(currentGFX == -1 && actor.getSpotAnimFrame() != 0) actor.setSpotAnimFrame(0);
-        if(tempGFXFrame != -1) actor.setSpotAnimFrame(tempGFXFrame);
-        if(tempGFXId != selectedGFXId || currentGFX == -1) actor.setGraphic(tempGFXId);
+        if (actor.hasSpotAnim(selectedGFXId))
+            if(tempGFXFrame != -1) actor.getSpotAnims().get(selectedGFXId).setFrame(tempGFXFrame);
+        else actor.createSpotAnim(tempGFXId, tempGFXId, tempGFXHeight, 0);
 
         // Keep track of selected animation and GFX
         selectedAnimationId = tempAnimationId;

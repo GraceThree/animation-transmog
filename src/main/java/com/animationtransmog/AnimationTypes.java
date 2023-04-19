@@ -1,5 +1,6 @@
 package com.animationtransmog;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -96,6 +97,10 @@ public class AnimationTypes {
     }
     public List<Integer> getAnimationTypeSpotAnimIds(String animationType)
     {
-        return animationTypeSpotAnimIds.get(animationType);
+        List<Integer> spotAnimIds = new ArrayList<>();
+        if (animationTypeSpotAnimIds.containsKey(animationType))
+            spotAnimIds = animationTypeSpotAnimIds.get(animationType);
+
+        return spotAnimIds;
     }
 }

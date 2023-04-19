@@ -12,7 +12,7 @@ public class PlayerController {
     HashMap<String, String> settings;
 
     // Constructor for non-local player
-    public PlayerController(DatabaseManager dbManager, AnimationTypes animationTypes, Actor actor, Client client, HashMap<String, String> settings)
+    public PlayerController(AnimationTypes animationTypes, Actor actor, Client client, HashMap<String, String> settings)
     {
         this.settings = settings;
         String playerName = actor.getName();

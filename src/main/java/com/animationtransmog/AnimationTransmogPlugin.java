@@ -21,8 +21,6 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 
 import java.util.HashMap;
-import java.util.Objects;
-import java.util.function.Function;
 
 @Slf4j
 @PluginDescriptor(
@@ -53,7 +51,7 @@ public class AnimationTransmogPlugin extends Plugin
 	String messageFromAnotherThread = "";
 
 	@Override
-	protected void startUp() throws Exception
+	protected void startUp()
 	{
 		log.info("Animation Transmog started!");
 		dbManager = new DatabaseManager();
@@ -64,7 +62,7 @@ public class AnimationTransmogPlugin extends Plugin
 	}
 
 	@Override
-	protected void shutDown() throws Exception
+	protected void shutDown()
 	{
 		log.info("Animation Transmog stopped!");
 	}
@@ -87,7 +85,7 @@ public class AnimationTransmogPlugin extends Plugin
 			if (actor != client.getLocalPlayer()) return;
 
 			HashMap<String, String> settings = getLocalSettings();
-			PlayerController playerController = new PlayerController(dbManager, animationTypes, actor, client, settings);
+			PlayerController playerController = new PlayerController(animationTypes, actor, client, settings);
 			players.put(playerName, playerController);
 
 			return;
@@ -103,7 +101,7 @@ public class AnimationTransmogPlugin extends Plugin
 					players.put(playerName, null);
 					return;
 				}
-				PlayerController playerController = new PlayerController(dbManager, animationTypes, actor, client, settings);
+				PlayerController playerController = new PlayerController(animationTypes, actor, client, settings);
 				players.put(playerName, playerController);
 			});
 		}
@@ -193,18 +191,7 @@ public class AnimationTransmogPlugin extends Plugin
 		if (playerController == null) return;
 
 		// Update effect
-		playerController.effectController.onChange(true);
-	}
-
-	@Subscribe
-	public void onGraphicChanged(GraphicChanged e)
-	{
-		Actor playerActor = e.getActor();
-		PlayerController playerController = players.get(playerActor.getName());
-		if (playerController == null) return;
-
-		// If the game client is trying to override the plugin's effect, re-override it
-		playerController.effectController.onChange(false);
+		playerController.effectController.onChange();
 	}
 
 	@Provides

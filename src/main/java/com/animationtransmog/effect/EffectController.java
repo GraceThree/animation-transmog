@@ -22,14 +22,14 @@ public class EffectController {
 
     private int customEffectLength = 0;
     private int customEffectLengthTimer = 0;
-    private List<Integer> customEffectSpotAnimBlockList = new ArrayList<>();
+    private List<Integer> customEffectSpotAnimBlockList;
+
     private int customAnimationID = -1;
     private int customAnimationFrame = 0;
     private int customAnimationStartFrame = 0;
     private int customAnimationEndFrame = -1;
 
     private int customGfxID = -1;
-
     private int customGfxFrame = 0;
     private int customGfxStartFrame = 0;
     private int customGfxEndFrame = -1;
@@ -37,10 +37,11 @@ public class EffectController {
     private int customSoundID = -1;
     private int customSoundFrameDelay = 0;
 
+    private WorldPoint effectLocation = null;
+
     private boolean isPlaying = false;
     private boolean isReadyToPlay = false;
-
-    private WorldPoint effectLocation = null;
+    private String playingAnimationType = "";
 
     public Actor actor = null;
     public Client client = null;
@@ -50,8 +51,8 @@ public class EffectController {
         this.animationTypes = animationTypes;
         this.settings = settings;
 
-        regionBlacklist = new ArrayList<Integer>();
-        regionBlacklistAnimations = new ArrayList<String>();
+        regionBlacklist = new ArrayList<>();
+        regionBlacklistAnimations = new ArrayList<>();
 
         // ToA Regions
         regionBlacklist.add(14164);
@@ -102,6 +103,7 @@ public class EffectController {
         // Credit goes to @geheur for idea
         effects.put("Plank", new Effect(837, -1, 0, 4, 0, 0, -1, 0, 200));
 
+        customEffectSpotAnimBlockList = new ArrayList<>();
     }
 
     public void setPlayer(Actor actor, Client client)
@@ -115,7 +117,7 @@ public class EffectController {
         this.settings = settings;
     }
 
-    public void onChange(Boolean animationChange) {
+    public void onChange() {
         // Get plugin config for current animation
         String currentAnimationType = animationTypes.getAnimationType(actor.getAnimation());
         List<Integer> currentAnimationTypeSpotAnimIDs = animationTypes.getAnimationTypeSpotAnimIds(currentAnimationType);
@@ -128,11 +130,10 @@ public class EffectController {
         }
 
         // If a custom effect is already playing, ignore any future changes
-        // TODO: Or if the new effect's animation type is different from the current one
-        if (isPlaying) return;
+        if (isPlaying && playingAnimationType.equals(currentAnimationType)) return;
 
         // Set the new effect based on the client animation
-        if (animationChange) setEffect(currentAnimationType, currentAnimationTypeSpotAnimIDs);
+        setEffect(currentAnimationType, currentAnimationTypeSpotAnimIDs);
     }
 
     void setEffect(String currentAnimationType, List<Integer> currentAnimationTypeSpotAnimIDs)
@@ -145,23 +146,25 @@ public class EffectController {
         Effect effect = getEffect(configOption);
         if (effect == null) return;
 
+        resetController();
+
         // Set information for new custom effect
         Animation newAnimation = effect.animation;
         GFX newGfx = effect.gfx;
         Sound newSound = effect.sound;
         customEffectLength = effect.length;
-        customEffectLengthTimer = 0;
-        customEffectSpotAnimBlockList = currentAnimationTypeSpotAnimIDs;
+        if (currentAnimationTypeSpotAnimIDs.size() > 0)
+        {
+            customEffectSpotAnimBlockList = currentAnimationTypeSpotAnimIDs;
+        }
 
         customAnimationID = newAnimation.animationId;
-        customAnimationFrame = 0;
         customAnimationStartFrame = newAnimation.startFrame;
         customAnimationEndFrame = newAnimation.endFrame;
 
         if (newGfx.gfxId != -1)
         {
             customGfxID = newGfx.gfxId;
-            customGfxFrame = 0;
             customGfxStartFrame = newGfx.startFrame;
             customGfxEndFrame = newGfx.endFrame;
         }
@@ -173,6 +176,7 @@ public class EffectController {
         }
 
         isReadyToPlay = true;
+        playingAnimationType = currentAnimationType;
     }
 
 
@@ -183,8 +187,6 @@ public class EffectController {
             if (isReadyToPlay)
             {
                 playEffect();
-                isPlaying = true;
-                isReadyToPlay = false;
             }
             return;
         }
@@ -195,22 +197,7 @@ public class EffectController {
                 (customEffectLength == -1 && customAnimationFrame >= customAnimationEndFrame) ||
                 !effectLocation.equals(actor.getWorldLocation())
         ) {
-            customAnimationID = -1;
-            customAnimationFrame = 0;
-            customAnimationEndFrame = -1;
-            actor.setAnimation(-1);
-
-            customGfxFrame = 0;
-            customGfxEndFrame = -1;
-            actor.removeSpotAnim(customGfxID);
-            customGfxID = -1;
-
-            customEffectLength = 0;
-            customEffectLengthTimer = 0;
-
-            effectLocation = null;
-
-            isPlaying = false;
+            resetController();
             return;
         }
 
@@ -234,12 +221,11 @@ public class EffectController {
         if (actor.hasSpotAnim(customGfxID)) {
             if (customGfxFrame > customGfxEndFrame) spotAnims.get(customGfxID).setFrame(customGfxEndFrame);
             customGfxFrame = spotAnims.get(customGfxID).getFrame();
-//            client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Spot Anim:" + customGfxID + " ?? " + spotAnims.get(customGfxID).hashCode() + " ?? " + spotAnims.get(customGfxID).getHash(), null);
 
         }
 
         // Block any spot anims that are in the block list
-        if (spotAnims != null)
+        if (spotAnims != null && customEffectSpotAnimBlockList.size() > 0)
         {
             for (ActorSpotAnim spotAnim : spotAnims)
             {
@@ -254,6 +240,37 @@ public class EffectController {
     public void updateTimer()
     {
         if (isPlaying) customEffectLengthTimer++;
+    }
+
+    void resetController()
+    {
+        customEffectLength = 0;
+        customEffectLengthTimer = 0;
+        if (customEffectSpotAnimBlockList.size() > 0)
+        {
+            customEffectSpotAnimBlockList = new ArrayList<>();
+        }
+
+        customAnimationFrame = 0;
+        customAnimationStartFrame = 0;
+        customAnimationEndFrame = -1;
+        if (actor.getAnimation() == customAnimationID) actor.setAnimation(-1);
+        customAnimationID = -1;
+
+        customGfxFrame = 0;
+        customGfxStartFrame = 0;
+        customGfxEndFrame = -1;
+        if (actor.hasSpotAnim(customGfxID)) actor.removeSpotAnim(customGfxID);
+        customGfxID = -1;
+
+        customSoundID = -1;
+        customSoundFrameDelay = 0;
+
+        effectLocation = null;
+
+        isPlaying = false;
+        isReadyToPlay = false;
+        playingAnimationType = "";
     }
 
     void playEffect()
@@ -276,6 +293,9 @@ public class EffectController {
         }
 
         effectLocation = actor.getWorldLocation();
+
+        isPlaying = true;
+        isReadyToPlay = false;
     }
 
 

@@ -1,5 +1,6 @@
 package com.animationtransmog.effect;
 
+import lombok.NonNull;
 import okhttp3.*;
 
 import java.io.*;
@@ -28,12 +29,12 @@ public class DatabaseManager {
         // Execute request on new thread
         client.newCall(request).enqueue(new Callback() {
             @Override
-            public void onFailure(Call call, IOException e) {
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
                 e.printStackTrace();
             }
 
             @Override
-            public void onResponse(Call call, final Response response) throws IOException {
+            public void onResponse(@NonNull Call call, @NonNull final Response response) throws IOException {
                 if (!response.isSuccessful()) {
                     throw new IOException("Unexpected code " + response);
                 } else {
@@ -44,7 +45,7 @@ public class DatabaseManager {
                     if (!bodyString.equals("null"))
                     {
                         // Parse JSON response into HashMap
-                        String responseString = bodyString.substring(1, bodyString.toString().length() - 1);
+                        String responseString = bodyString.substring(1, bodyString.length() - 1);
                         String[] responseStringList = responseString.split(",");
                         for (String keyVal : responseStringList)
                         {
@@ -89,12 +90,12 @@ public class DatabaseManager {
         // Execute request on new thread
         client.newCall(request).enqueue(new Callback() {
             @Override
-            public void onFailure(Call call, IOException e) {
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
                 e.printStackTrace();
             }
 
             @Override
-            public void onResponse(Call call, final Response response) throws IOException {
+            public void onResponse(@NonNull Call call, @NonNull final Response response) throws IOException {
                 if (!response.isSuccessful()) {
                     throw new IOException("Unexpected code " + response);
                 }
