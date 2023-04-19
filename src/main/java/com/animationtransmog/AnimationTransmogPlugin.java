@@ -19,6 +19,7 @@ import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
+import okhttp3.OkHttpClient;
 
 import java.util.HashMap;
 
@@ -37,6 +38,9 @@ public class AnimationTransmogPlugin extends Plugin
 	@Inject
 	private ChatMessageManager chatMessageManager;
 
+	@Inject
+	private OkHttpClient okHttpClient;
+
 	boolean configChanged = true;
 	boolean welcomeMessagePlayed = false;
 
@@ -54,7 +58,7 @@ public class AnimationTransmogPlugin extends Plugin
 	protected void startUp()
 	{
 		log.info("Animation Transmog started!");
-		dbManager = new DatabaseManager();
+		dbManager = new DatabaseManager(okHttpClient);
 		configManager = new AnimationTransmogConfigManager(config);
 		animationTypes = new AnimationTypes();
 		animationPlayerController = new AnimationPlayerController(configManager);

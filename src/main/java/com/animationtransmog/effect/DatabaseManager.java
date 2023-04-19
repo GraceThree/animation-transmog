@@ -12,9 +12,9 @@ public class DatabaseManager
 {
     OkHttpClient client;
 
-    public DatabaseManager()
+    public DatabaseManager(OkHttpClient client)
     {
-        client = new OkHttpClient();
+        this.client = client;
     }
 
     public void getSettings(String playerName, Consumer<HashMap<String, String>> callback)
