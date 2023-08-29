@@ -48,8 +48,13 @@ public class AnimationPlayerController
 
         // Create selected GFX
         if (actor.hasSpotAnim(selectedGFXId))
-            if(tempGFXFrame != -1) actor.getSpotAnims().get(selectedGFXId).setFrame(tempGFXFrame);
-        else actor.createSpotAnim(tempGFXId, tempGFXId, tempGFXHeight, 0);
+        {
+            if (tempGFXFrame != -1) actor.getSpotAnims().get(selectedGFXId).setFrame(tempGFXFrame);
+        }
+        else
+        {
+            actor.createSpotAnim(tempGFXId, tempGFXId, tempGFXHeight, 0);
+        }
 
         // Keep track of selected animation and GFX
         selectedAnimationId = tempAnimationId;
