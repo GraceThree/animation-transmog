@@ -42,7 +42,6 @@ public class AnimationTransmogPlugin extends Plugin
 	private OkHttpClient okHttpClient;
 
 	boolean configChanged = true;
-	boolean welcomeMessagePlayed = false;
 
 	DatabaseManager dbManager;
 
@@ -126,22 +125,6 @@ public class AnimationTransmogPlugin extends Plugin
 		{
 			// Setup animationPlayerController
 			animationPlayerController.setPlayer(client.getLocalPlayer(), client);
-
-			if (!configManager.getCanUseDB() && !welcomeMessagePlayed)
-			{
-				welcomeMessagePlayed = true;
-				chatMessageManager.queue(
-					QueuedMessage.builder()
-						.type(ChatMessageType.CONSOLE)
-						.runeLiteFormattedMessage(
-							new ChatMessageBuilder()
-								.append(ChatColorType.HIGHLIGHT)
-								.append("Animation Transmog Plugin: To enable new functionality, please go to the plugin settings and check \"Enable Multiplayer\" on.")
-								.build()
-						)
-						.build()
-				);
-			}
 		}
 	}
 
