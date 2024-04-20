@@ -128,7 +128,7 @@ public interface AnimationTransmogConfig extends Config
 	)
 	default DeathAnimation swapDeathAnimation()
 	{
-		return DeathAnimation.PLANK;
+		return DeathAnimation.MELT;
 	}
 
 

@@ -9,6 +9,19 @@
 - 7040: Glitch body
 - 9131: Pommel Tele
 - 9286: Gob potion
+- 11114-11117: Reading a book?
+- 11086: milkin dah cow
+- 11055: big chop
+- 11035: vaporize
+- 10956: magically appear
+- 10955: lounging on the ground
+- 10923: punch!
+- 10873: doom fire death
+- 10944: quetzalport
+- 10847: very agro
+- 10651: another chop
+- 10601: fancy swing
+- 
 
 ### gfx
 
@@ -26,3 +39,8 @@
 - 247: Blue portal on ground
 - 332: Purple portal on ground
 - 346: Fireball
+- 2619-2621: trailblazer ground fire
+- 2735-2745: Quetzal!
+- 2753: ice storm
+- 2610: fire death?
+- 2711: doom death

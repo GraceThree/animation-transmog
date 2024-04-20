@@ -103,6 +103,9 @@ public class EffectController
         // Death Effects
         // Credit goes to @geheur for idea
         effects.put("Plank", new Effect(837, -1, 0, 4, 0, 0, -1, 0, 200));
+        effects.put("Vaporize", new Effect(11035, -1, 0, 8, 0, 0, -1, 0, -1));
+        effects.put("Blaze", new Effect(10873, 2610, 0, 42, 0, 38, -1, 0, -1));
+        effects.put("Melt", new Effect(10873, 2711, 0, 42, 0, 74, -1, 0, -1));
 
         customEffectSpotAnimBlockList = new ArrayList<>();
     }

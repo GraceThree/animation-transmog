@@ -8,7 +8,11 @@ import lombok.RequiredArgsConstructor;
 public enum DeathAnimation
 {
     DEFAULT("Default"),
-    PLANK("Plank");
+    PLANK("Plank"),
+    BLAZE("Blaze"),
+    MELT("Melt"),
+    VAPORIZE("Vaporize");
+
 
     private final String option;
 
