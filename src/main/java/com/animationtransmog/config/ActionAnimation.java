@@ -9,6 +9,7 @@ public enum ActionAnimation
 {
     DEFAULT("Default"),
     ARCANECHOP("Arcane Chop"),
+    BRONZECHOP("Bronze Chop"),
     ARCANEMINE("Arcane Mine"),
     BLASTMINE("Blast Mine"),
     DIG("Dig"),

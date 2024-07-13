@@ -92,7 +92,9 @@ public class EffectController
 
         // Action Effects
         effects.put("Arcane Chop", new Effect(6298, 1063, 0, 159, 0, 40, -1, 0, -1));
+        effects.put("Bronze Chop", new Effect(879, -1, 0, 5, 0, 0, -1, 0,  500));
         effects.put("Arcane Mine", new Effect(4411, 739, 0, 45, 15, 35, -1, 0, -1));
+
         // Credit goes to @Cyborger1 for name and effect IDs
         effects.put("Smooth Scatter", new Effect(7533, 1103, 0, 32, 0, 32, -1, 0, -1));
         effects.put("Brutal", new Effect(9544, 1103, 0, 13, 0, 32, -1, 0, -1));
