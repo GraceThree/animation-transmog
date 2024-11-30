@@ -126,6 +126,10 @@ public class EffectController
     public void onChange() {
         // Get plugin config for current animation
         String currentAnimationType = animationTypes.getAnimationType(actor.getAnimation());
+        if (actor.hasSpotAnims(113)) { //Stupid fix for golden god being really fuckin annoying <3
+            actor.removeSpotAnim(113);
+            return;
+        }
         List<Integer> currentAnimationTypeSpotAnimIDs = animationTypes.getAnimationTypeSpotAnimIds(currentAnimationType);
         if (currentAnimationType == null) return;
 
@@ -142,6 +146,8 @@ public class EffectController
         // Set the new effect based on the client animation
         setEffect(currentAnimationType, currentAnimationTypeSpotAnimIDs);
     }
+
+    void setGFX(String currentAnimationType, 
 
     void setEffect(String currentAnimationType, List<Integer> currentAnimationTypeSpotAnimIDs)
     {
